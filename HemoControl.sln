@@ -1,10 +1,33 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35514.174 d17.12
+VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUI", "WebUI\WebUI.csproj", "{DCE03095-6437-4300-A6AE-865C3B51B0F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account", "Account\Account.csproj", "{E06A9A7B-DDD5-42C2-A031-99854142B5C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{72587927-FFFA-4E4D-8C7B-354AFAAAC7B5}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DCE03095-6437-4300-A6AE-865C3B51B0F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCE03095-6437-4300-A6AE-865C3B51B0F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCE03095-6437-4300-A6AE-865C3B51B0F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCE03095-6437-4300-A6AE-865C3B51B0F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E06A9A7B-DDD5-42C2-A031-99854142B5C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E06A9A7B-DDD5-42C2-A031-99854142B5C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E06A9A7B-DDD5-42C2-A031-99854142B5C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E06A9A7B-DDD5-42C2-A031-99854142B5C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E06A9A7B-DDD5-42C2-A031-99854142B5C6} = {72587927-FFFA-4E4D-8C7B-354AFAAAC7B5}
 	EndGlobalSection
 EndGlobal
