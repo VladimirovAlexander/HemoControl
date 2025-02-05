@@ -1,16 +1,57 @@
 <template>
-  <div class="login-container">
-    <h1>Login</h1>
-    <form @submit.prevent="login">
-      <div class="input-group">
-        <input v-model="email" type="email" placeholder="Email" required />
-        <input v-model="password" type="password" placeholder="Password" required />
-      </div>
-      <button type="submit" :disabled="isLoading">
-        {{ isLoading ? 'Logging in...' : 'Login' }}
-      </button>
-      <p v-if="error" class="error-message">{{ error }}</p>
-    </form>
+  <div class="min-h-screen bg-blue-50 flex items-center justify-center p-8">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-1/4 h-90">
+      
+      <h1 class="font-bold text-center space-y-4 mb-6">
+        <span class="text-red-500 text-2xl">Гемо</span>
+        <span class="text-blue-600 text-2xl">контроль</span>
+      </h1>
+
+      <form @submit.prevent="login" class="space-y-6">
+        
+        <div class="space-y-4">
+          <input 
+            v-model="email"
+            type="email" 
+            placeholder="Email" 
+            required 
+            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+          />
+          <input 
+            v-model="password" 
+            type="password" 
+            placeholder="Пароль" 
+            required 
+            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+          />
+        </div>
+
+        <a href="https://your-link.com" class="text-blue-600 hover:underline">Восстановить</a>
+        
+        <button 
+          type="submit" 
+          :disabled="isLoading"
+          class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50">
+          {{ isLoading ? 'Вход...' : 'Войти' }}
+        </button>
+
+        <p class="text-center text-sm text-gray-600 mt-4">Войти другим способом</p>
+
+        <button
+          type="button"
+          @click="loginWithTelegram"
+          class="w-full bg-white text-blue-500 py-3 rounded-lg hover:bg-gray-200 transition mt-4 border border-blue-500">
+          Войти через Telegram
+        </button>
+        
+        <a href="https://your-link.com" class="text-blue-600 hover:underline block text-center mt-2">
+          Не удаётся войти?
+        </a>
+        
+        <p v-if="error" class="text-red-500 text-center mt-4">{{ error }}</p>
+
+      </form>
+    </div>
   </div>
 </template>
 
@@ -41,10 +82,10 @@ export default {
           localStorage.setItem('token', data.token);
           router.push('/hemocontrol');
         } else {
-          error.value = data.message || 'Login failed. Please check your credentials.';
+          error.value = data.message || 'Ошибка входа. Проверьте данные.';
         }
       } catch (err) {
-        error.value = 'An error occurred while connecting to the server.';
+        error.value = 'Произошла ошибка подключения к серверу.';
       } finally {
         isLoading.value = false;
       }
@@ -60,47 +101,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.login-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.input-group {
-  margin-bottom: 15px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
-}
-</style>
