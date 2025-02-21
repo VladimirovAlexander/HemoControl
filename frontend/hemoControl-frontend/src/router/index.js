@@ -1,7 +1,7 @@
 import {createRouter,createWebHashHistory, createWebHistory} from 'vue-router';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
-import HemoControl from '../views/Hemocontrol.vue';
+import HemoControl from '../views/HemoControl.vue';
 
 const routes = [
     { path: '/', redirect: { name: 'Login' } },
