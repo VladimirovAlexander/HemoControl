@@ -9,6 +9,7 @@
         public string Patronymic { get; set; } = string.Empty;
         public DateOnly DateOfBirth { get; set; }
         public string Policy { get; set; } = string.Empty;
+        public string Passport {  get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public string Region { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
@@ -19,7 +20,7 @@
         public ICollection<Diagnosis> Diagnoses { get; set; } = new List<Diagnosis>();
         public ICollection<Reception> Receptions { get; set; } = new List<Reception>();
         public ICollection<Test> Tests { get; set; } = new List<Test>();
-        public ICollection<Medication> Medications { get; set } = new List<Medication>();
+        public ICollection<Medication> Medications { get; set; } = new List<Medication>();
         public ICollection<Report> Reports { get; set; } = new List<Report>();
 
 

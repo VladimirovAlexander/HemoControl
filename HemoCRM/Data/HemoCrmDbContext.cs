@@ -14,5 +14,15 @@ namespace HemoCRM.Data
         public DbSet<Report> Reports { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
 
+        public HemoCrmDbContext(DbContextOptions options):base(options) 
+        {
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
+
     }
 }
