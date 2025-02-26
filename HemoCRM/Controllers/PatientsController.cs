@@ -51,5 +51,21 @@ namespace HemoCRM.Controllers
 
             return Ok(patients);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePatientData(Guid id, UpdatePatientDataDto updatePatientDataDto)
+        {
+            if (updatePatientDataDto == null)
+            {
+                return BadRequest("Некторектные данные");
+            }
+            var patient = await _repo.UpdatePatientDataAsync(updatePatientDataDto, id);
+
+            if(patient == null)
+            {
+                return NotFound("Пациент не найден");
+            }
+            return Ok(patient);
+        }
     }
 }
