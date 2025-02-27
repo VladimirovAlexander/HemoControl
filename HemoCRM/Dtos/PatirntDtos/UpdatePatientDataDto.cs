@@ -1,10 +1,10 @@
-﻿namespace HemoCRM.Dtos
+﻿namespace HemoCRM.Dtos.PatirntDtos
 {
-    public class CreatePatientDto
+    public class UpdatePatientDataDto
     {
         public string Name { get; set; }
-        public string Surname { get; set; } 
-        public string Patronymic { get; set; }
+        public string Surname { get; set; } = string.Empty;
+        public string Patronymic { get; set; } = string.Empty;
         public DateOnly DateOfBirth { get; set; }
         public string Policy { get; set; } = string.Empty;
         public string Passport { get; set; } = string.Empty;

@@ -45,7 +45,7 @@ namespace HemoCRM.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Diagnosis");
+                    b.ToTable("Diagnosis", (string)null);
                 });
 
             modelBuilder.Entity("HemoCRM.Models.Doctor", b =>
@@ -85,7 +85,7 @@ namespace HemoCRM.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Doctors");
+                    b.ToTable("Doctors", (string)null);
                 });
 
             modelBuilder.Entity("HemoCRM.Models.Medication", b =>
@@ -122,7 +122,7 @@ namespace HemoCRM.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Medications");
+                    b.ToTable("Medications", (string)null);
                 });
 
             modelBuilder.Entity("HemoCRM.Models.Patient", b =>
@@ -181,7 +181,7 @@ namespace HemoCRM.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
                 });
 
             modelBuilder.Entity("HemoCRM.Models.Reception", b =>
@@ -216,7 +216,7 @@ namespace HemoCRM.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Receptions");
+                    b.ToTable("Receptions", (string)null);
                 });
 
             modelBuilder.Entity("HemoCRM.Models.Report", b =>
@@ -243,7 +243,7 @@ namespace HemoCRM.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Reports");
+                    b.ToTable("Reports", (string)null);
                 });
 
             modelBuilder.Entity("HemoCRM.Models.Test", b =>
@@ -277,7 +277,7 @@ namespace HemoCRM.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Tests");
+                    b.ToTable("Tests", (string)null);
                 });
 
             modelBuilder.Entity("HemoCRM.Models.Diagnosis", b =>

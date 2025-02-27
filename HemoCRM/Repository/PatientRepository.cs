@@ -1,12 +1,12 @@
 ﻿using HemoCRM.Data;
-using HemoCRM.Dtos;
+using HemoCRM.Dtos.PatirntDtos;
 using HemoCRM.Interfaces;
 using HemoCRM.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HemoCRM.Repository
 {
-    public class PatientRepository : IPatientInterface
+    public class PatientRepository : IPatientRepository
     {   
         private readonly HemoCrmDbContext _dbContext;
         public PatientRepository(HemoCrmDbContext dbContext) { 

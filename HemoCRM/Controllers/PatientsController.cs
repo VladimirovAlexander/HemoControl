@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HemoCRM.Models;
 using HemoCRM.Repository;
-using HemoCRM.Dtos;
+using HemoCRM.Dtos.PatirntDtos;
+using HemoCRM.Interfaces;
 namespace HemoCRM.Controllers
 {
     [Route("api/patient")]
     [ApiController]
     public class PatientsController : Controller
     {
-        private readonly PatientRepository _repo;
-        public PatientsController(PatientRepository patientRepository)
+        private readonly IPatientRepository _repo;
+        public PatientsController(IPatientRepository patientRepository)
         {
             _repo = patientRepository;
         }

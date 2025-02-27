@@ -1,4 +1,5 @@
 using HemoCRM.Data;
+using HemoCRM.Interfaces;
 using HemoCRM.Repository;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,8 +16,9 @@ namespace HemoCRM
                 option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            builder.Services.AddScoped<PatientRepository, PatientRepository>();
-
+            builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+            builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+            
             builder.Services.AddSwaggerGen();
             builder.Services.AddControllers();
             var app = builder.Build();

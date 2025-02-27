@@ -1,9 +1,9 @@
-﻿using HemoCRM.Dtos;
+﻿using HemoCRM.Dtos.PatirntDtos;
 using HemoCRM.Models;
 
 namespace HemoCRM.Interfaces
 {
-    public interface IPatientInterface
+    public interface IPatientRepository
     {
         Task<List<Patient>> GetPatientsAsync();
 
