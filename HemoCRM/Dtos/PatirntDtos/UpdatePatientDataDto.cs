@@ -3,6 +3,8 @@
     public class UpdatePatientDataDto
     {
         public string Name { get; set; }
+
+        public Guid UserId { get; set; }
         public string Surname { get; set; } = string.Empty;
         public string Patronymic { get; set; } = string.Empty;
         public DateOnly DateOfBirth { get; set; }

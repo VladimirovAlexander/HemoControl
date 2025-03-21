@@ -12,5 +12,8 @@ namespace HemoCRM.Interfaces
         Task<Patient?> GetPatientByIdAsync(Guid id);
 
         Task<Patient?> UpdatePatientDataAsync(UpdatePatientDataDto updatePatientDataDto, Guid id);
+
+        Task<bool> CheckUserRegistration(Guid id);
+
     }
 }

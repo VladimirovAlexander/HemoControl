@@ -24,7 +24,6 @@ namespace HemoCRM.Repository
             }
             return patientModel;
         }
-
         public async Task<Patient> CreatePatientAsync(CreatePatientDto patientDto)
         {
             var patient = new Patient()
@@ -46,13 +45,11 @@ namespace HemoCRM.Repository
             await _dbContext.SaveChangesAsync();
             return patient;
         }
-
         public async Task<Patient?> GetPatientByIdAsync(Guid id)
         {
             var patient = await _dbContext.Patients.FirstOrDefaultAsync(patient => patient.Id == id);
             return patient;
         }
-
         public async Task<Patient> UpdatePatientDataAsync(UpdatePatientDataDto updatePatientDataDto,Guid id)
         {
             var patient = await GetPatientByIdAsync(id);
@@ -62,6 +59,7 @@ namespace HemoCRM.Repository
                 return null;
             }
             patient.Name = updatePatientDataDto.Name;
+            patient.UserId = updatePatientDataDto.UserId;
             patient.Surname = updatePatientDataDto.Surname;
             patient.Patronymic = updatePatientDataDto.Patronymic;
             patient.DateOfBirth = updatePatientDataDto.DateOfBirth;
@@ -77,6 +75,23 @@ namespace HemoCRM.Repository
             await _dbContext.SaveChangesAsync(); 
 
             return patient;
+        }
+        public async Task<bool> CheckUserRegistration(Guid id)
+        {
+            var patient = await GetPatientByIdAsync(id);
+
+            if (patient == null)
+            {
+                throw new Exception("Пользователь не найден");
+            }
+            if (patient.UserId == Guid.Empty)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

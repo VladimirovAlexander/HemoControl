@@ -53,6 +53,8 @@ namespace Account
             builder.Services.AddControllers();
             builder.Services.AddSwaggerGen();
 
+
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
