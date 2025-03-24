@@ -12,7 +12,7 @@ namespace Account
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -33,12 +33,12 @@ namespace Account
                         ValidAudience = builder.Configuration["JWT:Audience"],
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(
-                        System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
-
+                            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
+                        )
                     };
                 });
 
-            builder.Services.AddIdentityCore<User>(options =>
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
@@ -46,15 +46,12 @@ namespace Account
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 8;
 
-            }).AddEntityFrameworkStores<AccountDbContext>();
+            })
+            .AddEntityFrameworkStores<AccountDbContext>();
 
             builder.Services.AddScoped<ITokenService, TokenService>();
-
             builder.Services.AddControllers();
             builder.Services.AddSwaggerGen();
-
-
-
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
@@ -63,12 +60,18 @@ namespace Account
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                await DataSeeder.SeedRolesAsync(serviceProvider);
+            }
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            
             app.UseCors("AllowAll");
             app.UseRouting();
             app.MapControllers();

@@ -1,4 +1,5 @@
-﻿using Account.Dtos;
+﻿using Account.Constants;
+using Account.Dtos;
 using Account.Interfaces;
 using Account.Model;
 using Microsoft.AspNetCore.Identity;
@@ -11,16 +12,13 @@ namespace Account.Controllers
     [ApiController]
     public class AccountController:Controller
     {
-
         private readonly UserManager<User> _userManager;
-        private readonly  ITokenService _tokenService;
-        //private readonly EmailService _emailService; 
+        private readonly  ITokenService _tokenService; 
 
         public AccountController(UserManager<User> userManager, ITokenService tokenService)
         {
             _userManager = userManager;
-            _tokenService = tokenService;
-            //_emailService = emailService;
+            _tokenService = tokenService;           
         }
 
         [HttpPost("register")]
@@ -38,27 +36,23 @@ namespace Account.Controllers
                     Email = registerModel.Email
                 };
 
-                    
-                var confirmEmail = Url.Action("ConfirmEmail", "Account", new { });
                 var createdUser = await _userManager.CreateAsync(user,registerModel.Password);
 
                 //TODO проверка по почте
                 if (createdUser.Succeeded)
                 {
-                    //await _emailService.SendEmailAsync();
-                    return StatusCode(201, "Registration successful");
+                    await _userManager.AddToRoleAsync(user, UserRole.User);
+                    return StatusCode(201, $"{UserRole.User} успешно зарегестрирован");
                 }
                 else
                 {
                     return BadRequest(string.Join("; ", createdUser.Errors.Select(e => e.Description)));
                 }
-
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Server error: {ex.Message}");
             }
-
         }
 
         [HttpPost("login")]
