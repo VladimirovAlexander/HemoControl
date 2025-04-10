@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HemoCRM.Web.Migrations
 {
     [DbContext(typeof(HemoCrmDbContext))]
-    [Migration("20250224125647_AddPassportField")]
-    partial class AddPassportField
+    [Migration("20250410122736_AddCompletedAtToReception")]
+    partial class AddCompletedAtToReception
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -48,7 +48,7 @@ namespace HemoCRM.Web.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Diagnosis");
+                    b.ToTable("Diagnoses");
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.Doctor", b =>
@@ -193,7 +193,10 @@ namespace HemoCRM.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("AppointmentDate")
+                    b.Property<DateTime?>("AppointmentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")

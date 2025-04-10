@@ -2,6 +2,7 @@
 using Account.Dtos;
 using Account.Interfaces;
 using Account.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,47 @@ namespace Account.Controllers
             }
         }
 
+        [Authorize(Roles = UserRole.Administrator)]
+        [HttpPost("register-staff")]
+        public async Task<IActionResult> RegisterStaff([FromBody] RegisterStaffDto registerModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid input data");
+            }
+
+            try
+            {
+                var validRoles = new List<string> { UserRole.Doctor, UserRole.Assistant, UserRole.Administrator };
+                if (!validRoles.Contains(registerModel.Role))
+                {
+                    return BadRequest("Неверная роль");
+                }
+
+                var user = new User
+                {
+                    UserName = registerModel.UserName,
+                    Email = registerModel.Email
+                };
+
+                var createdUser = await _userManager.CreateAsync(user, registerModel.Password);
+
+                if (createdUser.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, registerModel.Role);
+                    return StatusCode(201, $"{registerModel.Role} успешно зарегистрирован");
+                }
+                else
+                {
+                    return BadRequest(string.Join("; ", createdUser.Errors.Select(e => e.Description)));
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Server error: {ex.Message}");
+            }
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginModel)
         {
@@ -74,6 +116,5 @@ namespace Account.Controllers
                 return NotFound("Не верный логин или пароль");
             }
         }
-        
     }
 }

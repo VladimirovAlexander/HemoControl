@@ -1,9 +1,9 @@
-using HemoCRM.Data;
-using HemoCRM.Interfaces;
-using HemoCRM.Repository;
+using HemoCRM.Web.Data;
+using HemoCRM.Web.Interfaces;
+using HemoCRM.Web.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace HemoCRM
+namespace HemoCRM.Web
 {
     public class Program
     {
@@ -18,6 +18,7 @@ namespace HemoCRM
 
             builder.Services.AddScoped<IPatientRepository, PatientRepository>();
             builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+            builder.Services.AddScoped<IReceptionRepository, ReceptionRepository>();
             
             builder.Services.AddSwaggerGen();
             builder.Services.AddControllers();

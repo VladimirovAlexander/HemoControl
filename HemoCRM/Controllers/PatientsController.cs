@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using HemoCRM.Models;
-using HemoCRM.Repository;
-using HemoCRM.Dtos.PatirntDtos;
-using HemoCRM.Interfaces;
+using HemoCRM.Web.Models;
+using HemoCRM.Web.Repository;
+using HemoCRM.Web.Dtos.PatirntDtos;
+using HemoCRM.Web.Interfaces;
 using Account.Dtos;
 using NuGet.Protocol;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text;
-namespace HemoCRM.Controllers
+namespace HemoCRM.Web.Controllers
 {
     [Route("api/patient")]
     [ApiController]
@@ -115,5 +115,6 @@ namespace HemoCRM.Controllers
             }
             return Ok(patient);
         }
+
     }
 }

@@ -1,7 +1,7 @@
-﻿using HemoCRM.Dtos.DoctorDtos;
-using HemoCRM.Models;
+﻿using HemoCRM.Web.Dtos.DoctorDtos;
+using HemoCRM.Web.Models;
 
-namespace HemoCRM.Interfaces
+namespace HemoCRM.Web.Interfaces
 {
     public interface IDoctorRepository
     {

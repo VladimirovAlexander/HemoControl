@@ -2,7 +2,6 @@ using Account.Data;
 using Account.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using System.Numerics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Account.Helpers;

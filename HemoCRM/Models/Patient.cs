@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HemoCRM.Models
+namespace HemoCRM.Web.Models
 {
     public class Patient
     {

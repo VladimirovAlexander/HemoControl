@@ -1,4 +1,4 @@
-﻿namespace HemoCRM.Dtos.DoctorDtos
+﻿namespace HemoCRM.Web.Dtos.DoctorDtos
 {
     public class UpdateDoctorDataDto
     {

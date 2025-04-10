@@ -1,4 +1,4 @@
-﻿namespace HemoCRM.Models
+﻿namespace HemoCRM.Web.Models
 {
     public class Test
     {

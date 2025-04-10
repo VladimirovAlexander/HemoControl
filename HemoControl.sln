@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Account", "Account\Account.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{72587927-FFFA-4E4D-8C7B-354AFAAAC7B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HemoCRM", "HemoCRM\HemoCRM.csproj", "{75BA26A5-53AB-4631-A001-AB347AE1AEE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HemoCRM.Web", "HemoCRM\HemoCRM.Web.csproj", "{75BA26A5-53AB-4631-A001-AB347AE1AEE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

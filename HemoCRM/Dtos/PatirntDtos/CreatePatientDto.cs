@@ -1,4 +1,4 @@
-﻿namespace HemoCRM.Dtos.PatirntDtos
+﻿namespace HemoCRM.Web.Dtos.PatirntDtos
 {
     public class CreatePatientDto
     {

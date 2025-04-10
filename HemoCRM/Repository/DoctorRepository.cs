@@ -1,12 +1,12 @@
-﻿using HemoCRM.Data;
-using HemoCRM.Dtos.DoctorDtos;
-using HemoCRM.Interfaces;
-using HemoCRM.Models;
+﻿using HemoCRM.Web.Data;
+using HemoCRM.Web.Dtos.DoctorDtos;
+using HemoCRM.Web.Interfaces;
+using HemoCRM.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace HemoCRM.Repository
+namespace HemoCRM.Web.Repository
 {
     public class DoctorRepository: IDoctorRepository
     {

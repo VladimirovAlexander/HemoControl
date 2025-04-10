@@ -81,6 +81,7 @@
   
   <script>
   import feather from 'feather-icons';
+  import axios from 'axios'; // Импортируем axios
   
   export default {
     data() {
@@ -91,19 +92,12 @@
         currentMonth: new Date().getMonth(),
         selectedDate: today, // По умолчанию выбрана сегодняшняя дата
         menuItems: [
-          { title: "Мои пациенты", icon: "user", href: "/doctor/patients" },
-          { title: "Запросы на анализы", icon: "file-text", href: "/doctor/lab-requests" },
-          { title: "Записи на прием", icon: "calendar", href: "/doctor/appointments" },
-          { title: "История болезней", icon: "clipboard", href: "/doctor/records" },
-          { title: "Результаты анализов", icon: "bar-chart", href: "/doctor/lab-results" },
-          { title: "Чат с лаборантами", icon: "message-circle", href: "/doctor/chat" },
+            { title: "Главная", icon: "home", href: "/doctor/dashboard"},
+            { title: "Мои пациенты", icon: "user", href: "/doctor/patients" },
+            { title: "Направления на анализы", icon: "file-text", href: "/doctor/lab-requests" },
+            { title: "Записи на прием", icon: "calendar", href: "/doctor/appointments" },
         ],
-        appointments: [
-          { id: 1, patientName: "Иван Петров", date: "2025-03-21", time: "10:00" },
-          { id: 2, patientName: "Ольга Иванова", date: "2025-03-22", time: "12:30" },
-          { id: 3, patientName: "Сергей Смирнов", date: "2025-03-25", time: "15:00" },
-          { id: 4, patientName: "Анна Козлова", date: "2025-03-26", time: "14:00" },
-        ],
+        appointments: [], // Изначально пустой массив
         weekDays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
       };
     },
@@ -168,6 +162,15 @@
       },
       isSelected(date) {
         return date === this.selectedDate;
+      },
+      // Метод для загрузки TODO
+      async fetchAppointments() {
+        try {
+          const response = await axios.get('https://your-backend-api.com/appointments'); // Замените на ваш URL
+          this.appointments = response.data; // Обновляем данные
+        } catch (error) {
+          console.error('Ошибка при загрузке данных:', error);
+        }
       }
     },
     mounted() {
@@ -176,6 +179,7 @@
       } else {
         console.error("Feather icons не загружены!");
       }
+      this.fetchAppointments(); // Загружаем данные при монтировании компонента
     },
   };
   </script>

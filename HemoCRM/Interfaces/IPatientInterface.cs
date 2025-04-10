@@ -1,7 +1,7 @@
-﻿using HemoCRM.Dtos.PatirntDtos;
-using HemoCRM.Models;
+﻿using HemoCRM.Web.Dtos.PatirntDtos;
+using HemoCRM.Web.Models;
 
-namespace HemoCRM.Interfaces
+namespace HemoCRM.Web.Interfaces
 {
     public interface IPatientRepository
     {

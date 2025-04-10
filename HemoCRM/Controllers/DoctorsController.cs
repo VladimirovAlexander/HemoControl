@@ -1,9 +1,9 @@
-﻿using HemoCRM.Dtos.DoctorDtos;
-using HemoCRM.Interfaces;
-using HemoCRM.Repository;
+﻿using HemoCRM.Web.Dtos.DoctorDtos;
+using HemoCRM.Web.Interfaces;
+using HemoCRM.Web.Repository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HemoCRM.Controllers
+namespace HemoCRM.Web.Controllers
 {
     [Route("api/doctor")]
     [ApiController]
@@ -11,7 +11,6 @@ namespace HemoCRM.Controllers
     {
         private readonly IDoctorRepository _doctorRepository;
 
-        
         public DoctorsController(IDoctorRepository doctorRepository)
         {
             _doctorRepository = doctorRepository;

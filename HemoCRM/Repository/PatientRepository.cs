@@ -1,10 +1,10 @@
-﻿using HemoCRM.Data;
-using HemoCRM.Dtos.PatirntDtos;
-using HemoCRM.Interfaces;
-using HemoCRM.Models;
+﻿using HemoCRM.Web.Data;
+using HemoCRM.Web.Dtos.PatirntDtos;
+using HemoCRM.Web.Interfaces;
+using HemoCRM.Web.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HemoCRM.Repository
+namespace HemoCRM.Web.Repository
 {
     public class PatientRepository : IPatientRepository
     {   
@@ -13,7 +13,7 @@ namespace HemoCRM.Repository
         
             _dbContext = dbContext;
         }
-        public async Task<List<Patient>> GetPatientsAsync()
+        public async Task<List<Patient>?> GetPatientsAsync()
         {
             var patientModel = await _dbContext.Patients.ToListAsync();    
             if (patientModel.Count() == 0)

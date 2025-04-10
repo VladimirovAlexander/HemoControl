@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace HemoCRM.Migrations
+namespace HemoCRM.Web.Migrations
 {
     /// <inheritdoc />
     public partial class IntialCreate : Migration
