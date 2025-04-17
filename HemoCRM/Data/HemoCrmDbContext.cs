@@ -14,6 +14,7 @@ namespace HemoCRM.Web.Data
         public DbSet<Report> Reports { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Diagnosis> Diagnoses { get; set; }
+        public DbSet<Injection> Injections { get; set; }
 
         public HemoCrmDbContext(DbContextOptions options):base(options) 
         {

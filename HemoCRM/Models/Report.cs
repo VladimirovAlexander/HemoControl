@@ -9,8 +9,6 @@
         //JSON для передачи в форму
         public string Data { get; set; }  
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        
         public Patient Patient { get; set; } 
     }
 }

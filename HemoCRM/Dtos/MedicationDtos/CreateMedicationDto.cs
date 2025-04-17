@@ -1,16 +1,17 @@
-﻿namespace HemoCRM.Web.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HemoCRM.Web.Dtos.MedicationDtos
 {
-    public class Medication
+    public class CreateMedicationDto
     {
-        public Guid Id { get; set; }
+        [Required]
         public Guid PatientId { get; set; }
         public string MedicationName { get; set; }
         public string Dosage { get; set; }
         public string Instructions { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public double Quantity { get; set; } 
-        public Patient Patient { get; set; } = null!;
+
+        public double Quantity { get; set; }
     }
 }

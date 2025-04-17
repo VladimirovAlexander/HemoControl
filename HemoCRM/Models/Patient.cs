@@ -25,6 +25,7 @@ namespace HemoCRM.Web.Models
         public ICollection<Test> Tests { get; set; } = new List<Test>();
         public ICollection<Medication> Medications { get; set; } = new List<Medication>();
         public ICollection<Report> Reports { get; set; } = new List<Report>();
+        public ICollection<Injection> Injections { get; set; } = new List<Injection>();
 
 
 
