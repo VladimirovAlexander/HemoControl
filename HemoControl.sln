@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{72
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HemoCRM.Web", "HemoCRM\HemoCRM.Web.csproj", "{75BA26A5-53AB-4631-A001-AB347AE1AEE1}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{13562A23-221A-41B3-B57C-599F1B7421CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{75BA26A5-53AB-4631-A001-AB347AE1AEE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75BA26A5-53AB-4631-A001-AB347AE1AEE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75BA26A5-53AB-4631-A001-AB347AE1AEE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13562A23-221A-41B3-B57C-599F1B7421CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13562A23-221A-41B3-B57C-599F1B7421CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13562A23-221A-41B3-B57C-599F1B7421CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13562A23-221A-41B3-B57C-599F1B7421CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

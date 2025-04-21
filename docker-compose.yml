@@ -1,0 +1,13 @@
+services:
+  hemocrm.web:
+    image: ${DOCKER_REGISTRY-}hemocrmweb
+    build:
+      context: .
+      dockerfile: HemoCRM/Dockerfile
+
+  account:
+    image: ${DOCKER_REGISTRY-}account
+    build:
+      context: Account
+      dockerfile: Dockerfile
+
