@@ -53,9 +53,14 @@ namespace Account
             builder.Services.AddSwaggerGen();
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", policy =>
-                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:7001")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
             });
+
 
             var app = builder.Build();
 
@@ -71,7 +76,7 @@ namespace Account
                 app.UseSwaggerUI();
             }
             
-            app.UseCors("AllowAll");
+            app.UseCors("AllowFrontend");
             app.UseRouting();
             app.MapControllers();
 

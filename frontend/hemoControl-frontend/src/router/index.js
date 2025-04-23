@@ -5,21 +5,46 @@ import HemoControl from '../views/HemoControl.vue';
 import DoctorDashboard from '../views/doctorsViews/DoctorDashboard.vue'; 
 import PatientList from '../views/doctorsViews/PatientList.vue';
 import LabTests from '../views/doctorsViews/LabTests.vue';
-
+import BookAppoinment from '../views/patientViews/BookAppoinment.vue';
+import AppLayot from '../layout/AppLayot.vue';
 
 const routes = [
-    { path: '/', redirect: { name: 'Login' } },
+    { 
+        path: '/', 
+        component: AppLayot, 
+        name: 'AppLayot', children: [
+            { path: '/register', component: Register, name: 'Register' },
+            { path: '/hemocontrol', component: HemoControl, name: 'HemoControl', meta: { requiresAuth: true } },
+            { path: '/appointments/book', component: BookAppoinment, name: 'BookAppoinment', meta: { requiresAuth: true } },
+            { path: '/doctor/dashboard', component: DoctorDashboard, name: 'DoctorDashboard', meta: { requiresAuth: true } },
+            { path: '/doctor/patients', component: PatientList, name: 'PatientList', meta: { requiresAuth: true } },
+            { path: '/doctor/lab-requests', component: LabTests, name: 'LabTests', meta: { requiresAuth: true } },
+        ]
+    },
     { path: '/login', component: Login, name: 'Login' },
-    { path: '/register', component: Register, name: 'Register' },
-    { path: '/hemocontrol', component: HemoControl, name: 'HemoControl' },
-    { path: '/doctor/dashboard', component: DoctorDashboard, name: 'DoctorDashboard' }, // Новая страница
-    { path: '/doctor/patients', component: PatientList, name: 'PatientList'},
-    { path: '/doctor/lab-requests', component: LabTests, name: 'LabTests'},
+    { path: '/', redirect: { name: 'Login' } },
+    
+    
+    
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes
+  history: createWebHistory(),
+  routes,
 });
+
+
+router.beforeEach((to, from, next) => {
+    const isLoggedIn = !!localStorage.getItem('token');
+  
+    if (to.meta.requiresAuth && !isLoggedIn) {
+      next({
+        name: 'Login',
+        query: { message: 'Вы должны войти, чтобы получить доступ к этой странице.' },
+      });
+    } else {
+      next();
+    }
+  });
 
 export default router;
