@@ -19,11 +19,25 @@ namespace HemoCRM.Web
             builder.Services.AddScoped<IPatientRepository, PatientRepository>();
             builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
             builder.Services.AddScoped<IReceptionRepository, ReceptionRepository>();
+            builder.Services.AddScoped<IInjectionRepository, InjectionRepository>();
+            builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
+            builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+            builder.Services.AddScoped<ITestRepository, TestRepository>();
             
             builder.Services.AddSwaggerGen();
             builder.Services.AddControllers();
 
             builder.Services.AddHttpClient();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:7001")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
             var app = builder.Build();
 
@@ -33,6 +47,11 @@ namespace HemoCRM.Web
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("AllowFrontend");
+
+            app.MapGet("/", () => Results.Redirect("/swagger"));
+
             app.Run();
         }
     }

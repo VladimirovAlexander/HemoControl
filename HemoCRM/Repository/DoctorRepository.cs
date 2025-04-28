@@ -1,8 +1,10 @@
-﻿using HemoCRM.Web.Data;
+﻿using HemoCRM.Web.Constants;
+using HemoCRM.Web.Data;
 using HemoCRM.Web.Dtos.DoctorDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -44,6 +46,12 @@ namespace HemoCRM.Web.Repository
         public async Task<List<Doctor>> GetDoctorsAsync()
         {
             var doctorList = await _context.Doctors.ToListAsync();
+            return doctorList;
+        }
+
+        public async Task<List<Doctor>> GetDoctorsBySpecialtyAsync(string specialties)
+        {
+            var doctorList = await _context.Doctors.Where(x => x.Specialty == specialties).ToListAsync();
             return doctorList;
         }
 

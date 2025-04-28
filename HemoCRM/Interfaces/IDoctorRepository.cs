@@ -1,4 +1,5 @@
-﻿using HemoCRM.Web.Dtos.DoctorDtos;
+﻿using HemoCRM.Web.Constants;
+using HemoCRM.Web.Dtos.DoctorDtos;
 using HemoCRM.Web.Models;
 
 namespace HemoCRM.Web.Interfaces
@@ -12,5 +13,7 @@ namespace HemoCRM.Web.Interfaces
         Task<Doctor> CreateDoctorAsync(CreateDoctorDto createDoctorDto);
 
         Task<Doctor> UpdateDoctorAsync(UpdateDoctorDataDto updateDoctorDataDto, Guid id);
+
+        Task<List<Doctor>> GetDoctorsBySpecialtyAsync(string specialties);
     }
 }

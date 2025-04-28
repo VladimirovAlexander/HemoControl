@@ -85,6 +85,8 @@ namespace Account
 
             app.MapControllers();
 
+            app.MapGet("/", () => Results.Redirect("/swagger"));
+
             app.Run();
         }
     }

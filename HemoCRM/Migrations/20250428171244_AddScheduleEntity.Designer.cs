@@ -3,6 +3,7 @@ using System;
 using HemoCRM.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HemoCRM.Web.Migrations
 {
     [DbContext(typeof(HemoCrmDbContext))]
-    partial class HemoCrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250428171244_AddScheduleEntity")]
+    partial class AddScheduleEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,12 +97,6 @@ namespace HemoCRM.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<TimeSpan>("AppointmentDuration")
-                        .HasColumnType("interval");
-
-                    b.Property<TimeSpan>("BreakBetweenAppointments")
-                        .HasColumnType("interval");
-
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("integer");
 
@@ -109,10 +106,10 @@ namespace HemoCRM.Web.Migrations
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("interval");
 
-                    b.Property<TimeSpan>("LunchEnd")
+                    b.Property<TimeSpan?>("LunchEndTime")
                         .HasColumnType("interval");
 
-                    b.Property<TimeSpan>("LunchStart")
+                    b.Property<TimeSpan?>("LunchStartTime")
                         .HasColumnType("interval");
 
                     b.Property<TimeSpan>("StartTime")
@@ -122,7 +119,7 @@ namespace HemoCRM.Web.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("DoctorSchedules");
+                    b.ToTable("DoctorSchedule");
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.Injection", b =>

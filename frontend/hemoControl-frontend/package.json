@@ -11,10 +11,12 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.0.3",
     "axios": "^1.8.4",
+    "date-fns": "^4.1.0",
     "feather-icons": "^4.29.2",
     "lucide-vue-next": "^0.474.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vue3-datepicker": "^0.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
