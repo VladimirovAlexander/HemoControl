@@ -2,9 +2,7 @@
 using HemoCRM.Web.Dtos.PatirntDtos;
 using HemoCRM.Web.Interfaces;
 using System.Text.Json;
-using System.Text;
 using HemoCRM.Web.Dtos.AccountDtos;
-using HemoCRM.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 namespace HemoCRM.Web.Controllers
@@ -33,46 +31,57 @@ namespace HemoCRM.Web.Controllers
             return CreatedAtAction(nameof(GetPatientById), new { id = patien.Id }, patien);
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("sync-user-with-patient")]
         public async Task<IActionResult> SyncUserWithPatient()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized("UserId not found in token.");
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("UserId not found in token.");
+
             var userId = Guid.Parse(userIdClaim);
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString();
 
-            // Получить данные пользователя из AccountService (например, по Policy)
-            var userResponse = await _client.GetAsync($"https://localhost:7000/api/account/info");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7000/api/account/info");
+            request.Headers.Add("Authorization", accessToken);
 
+            var userResponse = await _client.SendAsync(request);
             if (!userResponse.IsSuccessStatusCode)
                 return StatusCode((int)userResponse.StatusCode, "Не удалось получить данные пользователя");
 
-            var userInfo = JsonSerializer.Deserialize<UserInfoDto>(await userResponse.Content.ReadAsStringAsync());
-
-            if (userInfo == null || string.IsNullOrEmpty(userInfo.PolicyNumber))
-                return BadRequest("Недостаточно информации для синхронизации");
-
-            // Найти пациента по полису и без привязки к пользователю
-            var patient = await _repo.FindPatientByPolicyAndNoUserAsync(userInfo.PolicyNumber);
-            if (patient != null)
+            var content = await userResponse.Content.ReadAsStringAsync();
+            var userInfo = JsonSerializer.Deserialize<UserInfoDto>(content, new JsonSerializerOptions
             {
-                var updateDto = new UpdatePatientDataDto { UserId = userId };
-                await _repo.UpdatePatientDataAsync(updateDto, patient.Id);
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (userInfo == null)
+                return BadRequest("Ответ от сервиса пользователей пуст.");
+
+            if (string.IsNullOrWhiteSpace(userInfo.PolicyNumber))
+                return BadRequest("Полис обязателен для синхронизации.");
+
+            var existingPatient = await _repo.FindPatientByPolicyAndNoUserAsync(userInfo.PolicyNumber);
+            if (existingPatient != null)
+            {
+                await _repo.UpdatePatientDataAsync(new UpdatePatientDataDto
+                {
+                    UserId = userId
+                }, existingPatient.Id);
+
                 return Ok("Пациент успешно привязан к пользователю.");
             }
 
-            // Если пациента нет — создать нового
-            var newPatientDto = new CreatePatientDto
+            var draftPatient = new CreatePatientDto
             {
-                Policy = userInfo.PolicyNumber,
+                UserId = userId,
                 Name = userInfo.Name,
-                Surname = userInfo.Surname,
-                DateOfBirth = userInfo.DateOfBirth,
-                UserId = userId
+                Policy = userInfo.PolicyNumber
             };
 
-            var created = await _repo.CreatePatientAsync(newPatientDto);
-            return Ok($"Создан новый пациент и привязан к пользователю: {created.Id}");
+            var createdPatient = await _repo.CreatePatientAsync(draftPatient);
+
+            return Ok($"Создан новый пациент и привязан к пользователю: {draftPatient.Name}");
         }
 
         [HttpGet("{id}")]
@@ -126,7 +135,6 @@ namespace HemoCRM.Web.Controllers
 
             var userId = Guid.Parse(userIdClaim);
 
-            // Пример: допустим, PolicyNumber передаётся как query
             string policy = Request.Query["policy"];
             if (string.IsNullOrWhiteSpace(policy)) return BadRequest("Policy number is required");
 
@@ -153,8 +161,6 @@ namespace HemoCRM.Web.Controllers
                 return Ok("Пациент привязан к пользователю.");
             }
 
-            // Если не найден — можно создать нового
-            // или вернуть сообщение
             return NotFound("Подходящий пациент не найден.");
         }
 

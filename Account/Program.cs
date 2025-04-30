@@ -53,30 +53,31 @@ namespace Account
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddControllers();
 
-            builder.Services.AddSwaggerGen(c =>
+            builder.Services.AddSwaggerGen(option =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-
-                var jwtSecurityScheme = new OpenApiSecurityScheme
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    BearerFormat = "JWT",
-                    Name = "Authorization",
                     In = ParameterLocation.Header,
+                    Description = "Please enter a valid token",
+                    Name = "Authorization",
                     Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    Description = "Put **_only_** your JWT Bearer token on textbox below!",
-
-                    Reference = new OpenApiReference
-                    {
-                        Id = JwtBearerDefaults.AuthenticationScheme,
-                        Type = ReferenceType.SecurityScheme
-                    }
-                };
-
-                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    { jwtSecurityScheme, Array.Empty<string>() }
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
                 });
             });
 
@@ -104,15 +105,16 @@ namespace Account
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            
-            app.UseCors("AllowFrontend");
-            app.UseRouting();
-            app.MapControllers();
 
+            app.UseRouting();
+            app.UseCors("AllowFrontend");
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.MapGet("/", () => Results.Redirect("/swagger"));
 

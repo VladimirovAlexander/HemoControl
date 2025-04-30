@@ -123,11 +123,17 @@ namespace Account.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("info")]
         public async Task<IActionResult> GetUserInfo()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return BadRequest("Invalid user ID in token");
+            }
+
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)

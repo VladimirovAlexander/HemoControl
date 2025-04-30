@@ -1,5 +1,4 @@
-﻿using Account.Model;
-using HemoCRM.Web.Data;
+﻿using HemoCRM.Web.Data;
 using HemoCRM.Web.Dtos.PatirntDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
