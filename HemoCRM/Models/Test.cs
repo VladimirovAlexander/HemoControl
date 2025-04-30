@@ -12,6 +12,7 @@ namespace HemoCRM.Web.Models
         
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public TestStatus Status { get; set; } = TestStatus.Pending;
+
         public string? Result { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

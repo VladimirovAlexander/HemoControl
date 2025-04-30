@@ -1,5 +1,4 @@
-﻿using HemoCRM.Web.Constants;
-using HemoCRM.Web.Dtos.DoctorDtos;
+﻿using HemoCRM.Web.Dtos.DoctorDtos;
 using HemoCRM.Web.Models;
 
 namespace HemoCRM.Web.Interfaces

@@ -14,7 +14,6 @@
         public string? Street { get; set; } = string.Empty;
         public int? HouseNumber { get; set; }
         public int? AppartmentNumber { get; set; }
-
         public Guid? UserId { get; set; }
     }
 }

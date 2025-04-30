@@ -22,7 +22,7 @@ namespace HemoCRM.Web.Repository
             var doctor = dto.DoctorId.HasValue ? await _dbContext.Doctors.FindAsync(dto.DoctorId) : null;
 
             if (patient == null || medication == null)
-                throw new Exception("Patient or Medication not found");
+                throw new Exception("Пациент или медикаменты не найдены");
 
             var injection = new Injection
             {

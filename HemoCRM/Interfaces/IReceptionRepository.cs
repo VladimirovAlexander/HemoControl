@@ -18,6 +18,7 @@ namespace HemoCRM.Web.Interfaces
         Task<Reception> CreateReceptionAsync(CreateReceptionDto reception);
 
         Task<Reception> UpdateReceptionAsync(UpdateReceptionDto reception, Guid receptionId);
+
         Task<List<DateTime>> GetAvailableSlotsAsync(Guid doctorId, DateTime date);
 
     }

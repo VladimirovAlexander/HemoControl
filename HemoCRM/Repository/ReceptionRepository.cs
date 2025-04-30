@@ -3,7 +3,6 @@ using HemoCRM.Web.Dtos.ReceptionDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace HemoCRM.Web.Repository
 {
@@ -118,12 +117,9 @@ namespace HemoCRM.Web.Repository
                         
                     reception.AppointmentDate = receptionDto.AppointmentDate;
                     break;
-
-
                 case ReceptionsStatus.Completed:
                     reception.CompletedAt = DateTime.UtcNow;
                     break;
-
                 default:
                     break;
             }

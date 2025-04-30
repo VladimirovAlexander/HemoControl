@@ -22,6 +22,7 @@ namespace Account
             });
 
             builder.Services.AddAuthorization();
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -51,6 +52,7 @@ namespace Account
             .AddEntityFrameworkStores<AccountDbContext>();
 
             builder.Services.AddScoped<ITokenService, TokenService>();
+
             builder.Services.AddControllers();
 
             builder.Services.AddSwaggerGen(option =>
@@ -90,7 +92,6 @@ namespace Account
                           .AllowAnyMethod();
                 });
             });
-
 
             var app = builder.Build();
 

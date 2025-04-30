@@ -145,7 +145,6 @@ namespace Account.Controllers
                 PolicyNumber = user.PolicyNumber,
                 Name = user.UserName
             };
-
             return Ok(dto);
         }
     }

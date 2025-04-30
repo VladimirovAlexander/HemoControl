@@ -3,7 +3,6 @@ using HemoCRM.Web.Dtos.PatirntDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace HemoCRM.Web.Repository
 {
@@ -19,9 +18,7 @@ namespace HemoCRM.Web.Repository
             var patientModel = await _dbContext.Patients.ToListAsync();    
             if (patientModel.Count() == 0)
             {
-
                 return null;
-                
             }
             return patientModel;
         }
@@ -96,7 +93,6 @@ namespace HemoCRM.Web.Repository
                 return true;
             }
         }
-
         public async Task<Patient?> FindPatientByPolicyAndNoUserAsync(string policyNumber)
         {
             return await _dbContext.Patients

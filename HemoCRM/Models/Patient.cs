@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace HemoCRM.Web.Models
+﻿namespace HemoCRM.Web.Models
 {
     public class Patient
     {

@@ -36,7 +36,6 @@ namespace HemoCRM.Web.Repository
             return days;
         }
 
-
         public async Task<List<TimeSpan>> GetAvailableTimesAsync(Guid doctorId, DateTime date)
         {
             date = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);

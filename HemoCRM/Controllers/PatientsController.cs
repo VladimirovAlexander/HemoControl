@@ -24,7 +24,7 @@ namespace HemoCRM.Web.Controllers
         {
             if (patientDto == null)
             {
-                return BadRequest("Некорректные данные пациента.");
+                return BadRequest("Некоректные данные пациента.");
             }
             var patien = await _repo.CreatePatientAsync(patientDto);
 
@@ -99,14 +99,12 @@ namespace HemoCRM.Web.Controllers
         [HttpGet("GetPatients")]
         public async Task<IActionResult> GetPatients()
         {
-
             var patients = await _repo.GetPatientsAsync();
             
             if(patients == null)
             {
                 return NotFound();
             }
-
             return Ok(patients);
         }
 
@@ -115,7 +113,7 @@ namespace HemoCRM.Web.Controllers
         {
             if (updatePatientDataDto == null)
             {
-                return BadRequest("Некторектные данные");
+                return BadRequest("Некоректные данные");
             }
             var patient = await _repo.UpdatePatientDataAsync(updatePatientDataDto, id);
 
@@ -131,12 +129,12 @@ namespace HemoCRM.Web.Controllers
         public async Task<IActionResult> AutoBindPatient()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized("UserId not found in token.");
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized("Не найден Id пользователя");
 
             var userId = Guid.Parse(userIdClaim);
 
             string policy = Request.Query["policy"];
-            if (string.IsNullOrWhiteSpace(policy)) return BadRequest("Policy number is required");
+            if (string.IsNullOrWhiteSpace(policy)) return BadRequest("Номер полиса обязательный");
 
             var patient = await _repo.FindPatientByPolicyAndNoUserAsync(policy);
             if (patient != null)
@@ -160,7 +158,6 @@ namespace HemoCRM.Web.Controllers
                 await _repo.UpdatePatientDataAsync(updateDto, patient.Id);
                 return Ok("Пациент привязан к пользователю.");
             }
-
             return NotFound("Подходящий пациент не найден.");
         }
 

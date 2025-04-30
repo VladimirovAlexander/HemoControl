@@ -1,12 +1,9 @@
-﻿using HemoCRM.Web.Constants;
-using HemoCRM.Web.Data;
+﻿using HemoCRM.Web.Data;
 using HemoCRM.Web.Dtos.DoctorDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace HemoCRM.Web.Repository
 {
@@ -71,7 +68,6 @@ namespace HemoCRM.Web.Repository
             doctor.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-
             return doctor;
         }
     }

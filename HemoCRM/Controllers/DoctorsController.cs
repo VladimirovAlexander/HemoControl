@@ -1,6 +1,5 @@
 ﻿using HemoCRM.Web.Dtos.DoctorDtos;
 using HemoCRM.Web.Interfaces;
-using HemoCRM.Web.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HemoCRM.Web.Controllers
@@ -37,12 +36,13 @@ namespace HemoCRM.Web.Controllers
             }
             return Ok(doctorList);
         }
+
         [HttpPost("CreateDoctor")]
         public async Task<IActionResult> CreateDoctor(CreateDoctorDto createDoctorDto)
         {
             var doctor = await _doctorRepository.CreateDoctorAsync(createDoctorDto);
-            if (doctor == null) { 
-                
+            if (doctor == null) 
+            { 
                 return BadRequest("Пользователь не создан");
             }
             return CreatedAtAction(nameof(GetDoctorById), new { id = doctor.Id}, doctor);
@@ -52,7 +52,8 @@ namespace HemoCRM.Web.Controllers
         public async Task<IActionResult> UpdateDoctorData(UpdateDoctorDataDto updateDoctorDataDto, Guid id)
         {
             var doctor = await _doctorRepository.UpdateDoctorAsync(updateDoctorDataDto, id);
-            if (doctor == null) {
+            if (doctor == null) 
+            {
                 return BadRequest("Изменения не сохранены");
             }
             return Ok(doctor);

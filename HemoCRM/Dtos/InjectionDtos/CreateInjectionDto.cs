@@ -9,6 +9,5 @@
         public int DoseIU { get; set; }
         public string? Notes { get; set; }
         public string? InjectionSite { get; set; }
-
     }
 }
