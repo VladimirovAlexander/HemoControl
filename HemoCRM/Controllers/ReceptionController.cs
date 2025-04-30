@@ -89,5 +89,12 @@ namespace HemoCRM.Web.Controllers
                 return Ok(updateReception);
             }
         }
+
+        [HttpGet("available-slots")]
+        public async Task<IActionResult> GetAvailableSlots(Guid doctorId, DateTime date)
+        {
+            var slots = await _receptionRepository.GetAvailableSlotsAsync(doctorId, date.Date);
+            return Ok(slots);
+        }
     }
 }

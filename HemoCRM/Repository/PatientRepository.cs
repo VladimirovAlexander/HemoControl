@@ -1,8 +1,10 @@
-﻿using HemoCRM.Web.Data;
+﻿using Account.Model;
+using HemoCRM.Web.Data;
 using HemoCRM.Web.Dtos.PatirntDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HemoCRM.Web.Repository
 {
@@ -38,7 +40,9 @@ namespace HemoCRM.Web.Repository
                 City = patientDto.City,
                 Street = patientDto.Street,
                 HouseNumber = patientDto.HouseNumber,
-                AppartmentNumber = patientDto.AppartmentNumber
+                AppartmentNumber = patientDto.AppartmentNumber,
+
+                UserId = patientDto.UserId ?? Guid.Empty
             };
 
             await _dbContext.Patients.AddAsync(patient);
@@ -92,6 +96,12 @@ namespace HemoCRM.Web.Repository
             {
                 return true;
             }
+        }
+
+        public async Task<Patient?> FindPatientByPolicyAndNoUserAsync(string policyNumber)
+        {
+            return await _dbContext.Patients
+                .FirstOrDefaultAsync(p => p.Policy == policyNumber && p.UserId == Guid.Empty);
         }
     }
 }

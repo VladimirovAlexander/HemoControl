@@ -39,6 +39,8 @@ namespace HemoCRM.Web.Controllers
         [HttpGet("available-times/{doctorId}")]
         public async Task<IActionResult> GetAvailableTimes(Guid doctorId, [FromQuery] DateTime date)
         {
+            date = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+
             var availableTimes = await _scheduleRepository.GetAvailableTimesAsync(doctorId, date);
 
             if (!availableTimes.Any())

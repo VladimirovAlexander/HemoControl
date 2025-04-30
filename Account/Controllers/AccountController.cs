@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Account.Controllers
 {
@@ -31,10 +32,11 @@ namespace Account.Controllers
             }
             try
             {
-                var user = new User 
-                { 
+                var user = new User
+                {
                     UserName = registerModel.UserName,
-                    Email = registerModel.Email
+                    Email = registerModel.Email,
+                    PolicyNumber = registerModel.PolicyNumber
                 };
 
                 var createdUser = await _userManager.CreateAsync(user,registerModel.Password);
@@ -43,7 +45,11 @@ namespace Account.Controllers
                 if (createdUser.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, UserRole.User);
-                    return StatusCode(201, $"{UserRole.User} успешно зарегестрирован");
+                    return Ok(new UserResponseDto
+                    {
+                        UserId = Guid.Parse(user.Id),
+                        Email = user.Email
+                    });
                 }
                 else
                 {
@@ -115,6 +121,26 @@ namespace Account.Controllers
             {
                 return NotFound("Не верный логин или пароль");
             }
+        }
+
+        [Authorize]
+        [HttpGet("info")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                return NotFound("Пользователь не найден");
+
+            var dto = new UserInfoDto
+            {
+                UserId = Guid.Parse(user.Id),
+                PolicyNumber = user.PolicyNumber,
+                Name = user.UserName
+            };
+
+            return Ok(dto);
         }
     }
 }

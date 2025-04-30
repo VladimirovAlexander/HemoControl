@@ -17,7 +17,7 @@ namespace HemoCRM.Web.Repository
         public async Task<List<DateTime>> GetAvailableDaysAsync(Guid doctorId)
         {
             var days = new List<DateTime>();
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
             var schedule = await _context.DoctorSchedules.FirstOrDefaultAsync(s => s.DoctorId == doctorId);
 
             if (schedule == null) return days;
@@ -25,7 +25,6 @@ namespace HemoCRM.Web.Repository
             for (int i = 0; i < 30; i++)
             {
                 var date = today.AddDays(i);
-
                 var times = await GetAvailableTimesAsync(doctorId, date);
 
                 if (times.Any())
@@ -37,8 +36,11 @@ namespace HemoCRM.Web.Repository
             return days;
         }
 
+
         public async Task<List<TimeSpan>> GetAvailableTimesAsync(Guid doctorId, DateTime date)
         {
+            date = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+
             var schedule = await _context.DoctorSchedules.FirstOrDefaultAsync(s => s.DoctorId == doctorId);
             if (schedule == null) return new List<TimeSpan>();
 
@@ -46,7 +48,7 @@ namespace HemoCRM.Web.Repository
                 .Where(r => r.DoctorId == doctorId && r.AppointmentDate.HasValue && r.AppointmentDate.Value.Date == date.Date)
                 .ToListAsync();
 
-            List<TimeSpan> availableTimes = new List<TimeSpan>();
+            List<TimeSpan> availableTimes = new();
 
             TimeSpan time = schedule.StartTime;
             while (time + schedule.AppointmentDuration <= schedule.EndTime)

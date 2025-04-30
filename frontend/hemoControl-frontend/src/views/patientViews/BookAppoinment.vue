@@ -197,9 +197,25 @@ export default {
     isSelected(date) {
       return this.selectedDate === date
     },
-    bookAppointment() {
-      const doctor = this.doctors.find(d => d.id === this.selectedDoctorId)
-      this.successMessage = `Вы записались к врачу ${doctor.lastName} ${doctor.firstName} на ${format(parseISO(this.selectedDate), "d MMMM", { locale: ru })} в ${this.selectedTime}`
+    async bookAppointment() {
+      if (!this.selectedDoctorId || !this.selectedDate || !this.selectedTime) return;
+
+      const appointmentDateTime = new Date(`${this.selectedDate}T${this.selectedTime}:00Z`);
+
+      const dto = {
+        doctorId: this.selectedDoctorId,
+        appointmentDate: appointmentDateTime.toISOString() // важно для PostgreSQL
+      };
+
+      try {
+        const response = await axios.post('http://localhost:5044/api/reception/createReception', dto);
+
+        const doctor = this.doctors.find(d => d.id === this.selectedDoctorId);
+        this.successMessage = `Вы записались к врачу ${doctor.lastName} ${doctor.firstName} на ${format(parseISO(this.selectedDate), "d MMMM", { locale: ru })} в ${this.selectedTime}`;
+      } catch (error) {
+        console.error('Ошибка при создании записи:', error);
+        alert('Произошла ошибка при записи. Пожалуйста, попробуйте позже.');
+      }
     },
     closeModal() {
       this.successMessage = ''

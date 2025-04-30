@@ -1,16 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace HemoCRM.Web.Models
 {
     public class Patient
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
+
         public string Name { get; set; }
         public string Surname { get; set; } = string.Empty;
         public string Patronymic { get; set; } = string.Empty;
-        public DateOnly DateOfBirth { get; set; }
-       
+        public DateTime? DateOfBirth { get; set; }
         public string Policy { get; set; } = string.Empty;
         public string Passport {  get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;

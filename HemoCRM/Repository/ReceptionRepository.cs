@@ -26,28 +26,30 @@ namespace HemoCRM.Web.Repository
             return reception;
         }
 
-        public async Task<Reception> CreateReceptionAsync(CreateReceptionDto receptionDto)
+        public async Task<Reception?> CreateReceptionAsync(CreateReceptionDto dto)
         {
+            var isTaken = await _dbContext.Receptions.AnyAsync(r =>
+                r.DoctorId == dto.DoctorId &&
+                r.AppointmentDate == dto.AppointmentDateTime);
 
-            var doctor = await _dbContext.Doctors.FindAsync(receptionDto.DoctorId);
-
-            if(doctor == null)
+            if (isTaken)
             {
-                throw new Exception("Doctor not found");
+                return null;
             }
 
-            var reception = new Reception()
+            var reception = new Reception
             {
-                AppointmentDate = receptionDto.AppointmentDate,
-                CreatedAt = DateTime.UtcNow,
-                Status = receptionDto.Status,
-                Doctor = doctor,
-                DoctorId = receptionDto.DoctorId,
-                Notes = receptionDto.Notes
+                Id = Guid.NewGuid(),
+                PatientId = dto.PatientId,
+                DoctorId = dto.DoctorId,
+                AppointmentDate = dto.AppointmentDateTime.ToUniversalTime(),
+                Notes = dto.Notes,
+                CreatedAt = DateTime.UtcNow
             };
 
-            await _dbContext.Receptions.AddAsync(reception);
+            _dbContext.Receptions.Add(reception);
             await _dbContext.SaveChangesAsync();
+
             return reception;
         }
 
@@ -117,10 +119,6 @@ namespace HemoCRM.Web.Repository
                     reception.AppointmentDate = receptionDto.AppointmentDate;
                     break;
 
-                case ReceptionsStatus.Canceled:
-                        
-                    reception.AppointmentDate = null;
-                    break;
 
                 case ReceptionsStatus.Completed:
                     reception.CompletedAt = DateTime.UtcNow;
@@ -134,6 +132,38 @@ namespace HemoCRM.Web.Repository
             await _dbContext.SaveChangesAsync();
 
             return reception;
+        }
+
+        public async Task<List<DateTime>> GetAvailableSlotsAsync(Guid doctorId, DateTime date)
+        {
+            var schedule = await _dbContext.DoctorSchedules
+                .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.DayOfWeek == date.DayOfWeek);
+            if (schedule == null) return new List<DateTime>();
+
+            var start = schedule.StartTime;
+            var end = schedule.EndTime;
+
+            var slots = new List<DateTime>();
+            var current = start;
+
+            while (current + schedule.AppointmentDuration <= end)
+            {
+                if (current >= schedule.LunchStart && current < schedule.LunchEnd)
+                {
+                    current = schedule.LunchEnd;
+                    continue;
+                }
+
+                slots.Add(date.Date + current);
+                current += schedule.AppointmentDuration + schedule.BreakBetweenAppointments;
+            }
+
+            var takenTimes = await _dbContext.Receptions
+                .Where(r => r.DoctorId == doctorId && r.AppointmentDate.Value.Date == date.Date)
+                .Select(r => r.AppointmentDate.Value)
+                .ToListAsync();
+
+            return slots.Where(s => !takenTimes.Contains(s)).ToList();
         }
     }
 }
