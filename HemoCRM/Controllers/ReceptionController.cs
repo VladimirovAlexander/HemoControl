@@ -1,6 +1,9 @@
 ﻿using HemoCRM.Web.Dtos.ReceptionDtos;
 using HemoCRM.Web.Interfaces;
+using HemoCRM.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HemoCRM.Web.Controllers
 {
@@ -17,6 +20,7 @@ namespace HemoCRM.Web.Controllers
         }
 
 
+        [Authorize]
         [HttpGet("reception/{id}")]
         public async Task<IActionResult> GetReceptionById(Guid id)
         {
@@ -25,6 +29,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(reception);
         }
 
+        [Authorize]
         [HttpGet("reception")]
         public async Task<IActionResult> GetReceptions()
         {
@@ -32,6 +37,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(receptions);
         }
 
+        [Authorize]
         [HttpGet("user-receptions/{userId}")]
         public async Task<IActionResult> GetUsersReceptions(Guid iduserId)
         {
@@ -39,13 +45,15 @@ namespace HemoCRM.Web.Controllers
             return Ok(receptions);
         }
 
+        [Authorize]
         [HttpGet("doctor-receptions/{doctorId}")]
         public async Task<IActionResult> GetDoctorsReceptions(Guid doctorId)
         {
             var receptions = await _receptionRepository.GetDoctorReceptionsAsync(doctorId);
             return Ok(receptions);
         }
-
+        
+        [Authorize]
         [HttpPut("deleteReception/{id}")]
         public async Task<IActionResult> DeleteReceptionAsync(Guid id)
         {
@@ -60,41 +68,16 @@ namespace HemoCRM.Web.Controllers
             }
         }
 
-        [HttpPost("createReception")]
+        [Authorize]
+        [HttpPost("create-reception")]
         public async Task<IActionResult> CreateReception([FromBody] CreateReceptionDto createReceptionDto)
         {
-            var newReception = await _receptionRepository.CreateReceptionAsync(createReceptionDto);
+            var result = await _receptionRepository.CreateReceptionAsync(createReceptionDto);
 
-            if (newReception == null) {
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-                return BadRequest("Запись не создана");
-            }
-            return CreatedAtAction(
-                nameof(GetReceptionById),
-                new { id = newReception.Id },
-                newReception  
-            );
-        }
-
-        [HttpPut("updateReception")]
-        public async Task<IActionResult> UpdateReception([FromBody] UpdateReceptionDto updateReceptionDto, Guid id)
-        {
-            var updateReception = await _receptionRepository.UpdateReceptionAsync(updateReceptionDto, id);
-            if (updateReception == null) {
-
-                return BadRequest("Изменения не приняты");
-            }
-            else
-            {
-                return Ok(updateReception);
-            }
-        }
-
-        [HttpGet("available-slots")]
-        public async Task<IActionResult> GetAvailableSlots(Guid doctorId, DateTime date)
-        {
-            var slots = await _receptionRepository.GetAvailableSlotsAsync(doctorId, date.Date);
-            return Ok(slots);
+            return Ok(new { message = "Запись успешно создана", receptionId = result.ReceptionId });
         }
     }
 }

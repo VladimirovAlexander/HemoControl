@@ -59,11 +59,11 @@ namespace HemoCRM.Web.Repository
                 return null;
             }
             patient.Name = updatePatientDataDto.Name;
-            patient.UserId = updatePatientDataDto.UserId;
             patient.Surname = updatePatientDataDto.Surname;
             patient.Patronymic = updatePatientDataDto.Patronymic;
-            patient.DateOfBirth = updatePatientDataDto.DateOfBirth;
-            patient.Policy = updatePatientDataDto.Policy;
+            patient.DateOfBirth = updatePatientDataDto.DateOfBirth.HasValue
+                ? DateTime.SpecifyKind(updatePatientDataDto.DateOfBirth.Value, DateTimeKind.Utc)
+                : (DateTime?)null;
             patient.Country = updatePatientDataDto.Country;
             patient.Region = updatePatientDataDto.Region;
             patient.City = updatePatientDataDto.City;
@@ -93,10 +93,17 @@ namespace HemoCRM.Web.Repository
                 return true;
             }
         }
-        public async Task<Patient?> FindPatientByPolicyAndNoUserAsync(string policyNumber)
+        public async Task<Patient?> FindPatientByPolicyAndNoUserAsync(string policyNumber, Guid userId)
         {
             return await _dbContext.Patients
-                .FirstOrDefaultAsync(p => p.Policy == policyNumber && p.UserId == Guid.Empty);
+                .FirstOrDefaultAsync(p => p.Policy == policyNumber && p.UserId == userId);
+        }
+
+        public async Task<Guid?> GetPatientIdByUserIdAsync(Guid userId)
+        {
+            var patient = await _dbContext.Patients.FirstOrDefaultAsync(u => u.UserId == userId);
+            var patientId = patient?.Id;
+            return patientId;
         }
     }
 }

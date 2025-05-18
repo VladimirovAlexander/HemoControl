@@ -108,7 +108,9 @@ namespace Account
             }
 
             app.UseRouting();
+
             app.UseCors("AllowFrontend");
+
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -1,5 +1,6 @@
 ﻿using HemoCRM.Web.Dtos.InjectionDtos;
 using HemoCRM.Web.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HemoCRM.Web.Controllers
@@ -15,6 +16,7 @@ namespace HemoCRM.Web.Controllers
             _injectionRepository = injectionRepository;
         }
 
+        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateInjection([FromBody] CreateInjectionDto dto)
         {
@@ -22,6 +24,7 @@ namespace HemoCRM.Web.Controllers
             return CreatedAtAction(nameof(GetInjectionById), new { id = injection.Id }, injection);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetInjectionById(Guid id)
         {
@@ -32,6 +35,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(injection);
         }
 
+        [Authorize]
         [HttpGet("patient/{patientId}")]
         public async Task<IActionResult> GetPatientInjections(Guid patientId)
         {
@@ -39,6 +43,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(list);
         }
 
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllInjections()
         {

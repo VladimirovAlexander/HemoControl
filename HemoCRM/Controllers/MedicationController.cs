@@ -1,5 +1,6 @@
 ﻿using HemoCRM.Web.Dtos.MedicationDtos;
 using HemoCRM.Web.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HemoCRM.Web.Controllers
@@ -15,6 +16,7 @@ namespace HemoCRM.Web.Controllers
             _medicationRepository = medicationRepository;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,6 +24,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(meds);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -32,6 +35,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(med);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateMedicationDto dto)
         {
@@ -39,6 +43,7 @@ namespace HemoCRM.Web.Controllers
             return CreatedAtAction(nameof(GetById), new { id = med.Id }, med);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateMedicationDto dto)
         {
@@ -49,6 +54,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(med);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -59,6 +65,7 @@ namespace HemoCRM.Web.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpGet("remaining")]
         public async Task<IActionResult> GetRemainingQuantity(Guid patientId, string medicationName)
         {
@@ -69,6 +76,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(new { MedicationName = medicationName, Quantity = quantity });
         }
 
+        [Authorize]
         [HttpPost("prescribe")]
         public async Task<IActionResult> PrescribeMedication([FromBody] PrescribeMedicationDto dto)
         {

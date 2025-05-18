@@ -41,7 +41,6 @@ namespace Account.Controllers
 
                 var createdUser = await _userManager.CreateAsync(user,registerModel.Password);
 
-                //TODO проверка по почте
                 if (createdUser.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, UserRole.User);
@@ -119,7 +118,7 @@ namespace Account.Controllers
             }
             else
             {
-                return NotFound("Не верный логин или пароль");
+                return NotFound("Неверный логин или пароль");
             }
         }
 
@@ -143,7 +142,9 @@ namespace Account.Controllers
             {
                 UserId = Guid.Parse(user.Id),
                 PolicyNumber = user.PolicyNumber,
-                Name = user.UserName
+                Name = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email
             };
             return Ok(dto);
         }

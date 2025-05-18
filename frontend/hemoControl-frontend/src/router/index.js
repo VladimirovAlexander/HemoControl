@@ -7,25 +7,24 @@ import PatientList from '../views/doctorsViews/PatientList.vue';
 import LabTests from '../views/doctorsViews/LabTests.vue';
 import BookAppoinment from '../views/patientViews/BookAppoinment.vue';
 import AppLayot from '../layout/AppLayot.vue';
+import Profile from '../views/Profile.vue';
 
 const routes = [
     { 
-        path: '/', 
+        path: '/hemocontrol', 
         component: AppLayot, 
         name: 'AppLayot', children: [
-            { path: '/register', component: Register, name: 'Register' },
             { path: '/hemocontrol', component: HemoControl, name: 'HemoControl', meta: { requiresAuth: true } },
             { path: '/appointments/book', component: BookAppoinment, name: 'BookAppoinment', meta: { requiresAuth: true } },
             { path: '/doctor/dashboard', component: DoctorDashboard, name: 'DoctorDashboard', meta: { requiresAuth: true } },
             { path: '/doctor/patients', component: PatientList, name: 'PatientList', meta: { requiresAuth: true } },
             { path: '/doctor/lab-requests', component: LabTests, name: 'LabTests', meta: { requiresAuth: true } },
+            { path: '/hemocontrol/profile', component: Profile, name: 'Profile', meta: { requiresAuth: true } },
         ]
     },
+    { path: '/register', component: Register, name: 'Register' },
     { path: '/login', component: Login, name: 'Login' },
     { path: '/', redirect: { name: 'Login' } },
-    
-    
-    
 ];
 
 const router = createRouter({

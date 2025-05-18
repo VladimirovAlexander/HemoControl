@@ -74,7 +74,7 @@
         isSidebarCollapsed: false,
         isLoggedIn: false,
         menuItems: [
-          { title: 'Главная', icon: 'home', href: '/' },
+          { title: 'Главная', icon: 'home', href: '/hemocontrol' },
           { title: 'Запись к врачу', icon: 'calendar', href: '/appointments/book' },
           { title: 'Мои приёмы', icon: 'clock', href: '/appointments' },
           { title: 'Результаты анализов', icon: 'file-text', href: '/lab-results' },
@@ -94,10 +94,11 @@
         this.$router.push('/login');
       },
       goToProfile() {
-        this.$router.push('/profile');
+        this.$router.push('/hemocontrol/profile');
       },
       logout() {
         localStorage.removeItem('token');
+        localStorage.clear();
         this.isLoggedIn = false;
         this.$router.push('/login');
       },

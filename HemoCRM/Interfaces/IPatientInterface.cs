@@ -15,7 +15,9 @@ namespace HemoCRM.Web.Interfaces
 
         Task<bool> CheckUserRegistration(Guid id);
 
-        Task<Patient?> FindPatientByPolicyAndNoUserAsync(string policyNumber);
+        Task<Patient?> FindPatientByPolicyAndNoUserAsync(string policyNumber, Guid userId);
+
+        Task<Guid?> GetPatientIdByUserIdAsync(Guid userId);
 
     }
 }

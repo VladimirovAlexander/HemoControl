@@ -65,7 +65,8 @@ namespace HemoCRM.Web
                 {
                     policy.WithOrigins("http://localhost:7001")
                           .AllowAnyHeader()
-                          .AllowAnyMethod();
+                          .AllowAnyMethod()
+                          .AllowCredentials();
                 });
             });
 
@@ -96,10 +97,12 @@ namespace HemoCRM.Web
                 app.UseSwaggerUI();
             }
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseRouting();
 
             app.UseCors("AllowFrontend");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapGet("/", () => Results.Redirect("/swagger"));
 

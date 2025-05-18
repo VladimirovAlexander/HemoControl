@@ -58,12 +58,12 @@
           <div class="flex flex-wrap gap-2 justify-center">
             <button
               v-for="time in availableTimes"
-              :key="time"
+              :key="time.slotId"
               @click="selectTime(time)"
               :class="[ 'px-4 py-2 text-sm rounded-lg border transition',
-                selectedTime === time ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 hover:bg-blue-50' ]"
+                selectedTime === time.time ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 hover:bg-blue-50' ]"
             >
-              {{ time }}
+              {{ formatTime(time.time) }}
             </button>
           </div>
         </div>
@@ -106,7 +106,7 @@ export default {
     return {
       doctors: [],
       selectedDoctorId: '',
-      availableDates: [], // от сервера
+      availableDates: [],
       selectedDate: '',
       availableTimes: [],
       selectedTime: '',
@@ -114,6 +114,7 @@ export default {
       currentMonth: new Date().getMonth(),
       currentYear: new Date().getFullYear(),
       weekDays: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+      selectedSlotId: '',
     }
   },
   computed: {
@@ -136,7 +137,8 @@ export default {
         })
       }
       return days
-    }
+    },
+    
   },
   mounted() {
     this.fetchDoctors()
@@ -144,11 +146,16 @@ export default {
   methods: {
     async fetchDoctors() {
       try {
-        const response = await axios.get('http://localhost:5044/api/doctor/GetDoctors')
+        const response = await axios.get('https://localhost:7098/api/doctor/GetDoctors',{
+          headers: {Authorization:`Bearer ${localStorage.getItem('token')}`},
+        })
         this.doctors = response.data
       } catch (error) {
         console.error('Ошибка получения врачей:', error)
       }
+    },
+    formatTime(rawTime) {
+      return rawTime ? rawTime.slice(0, 5) : '';
     },
     async onDoctorChange() {
       this.selectedDate = ''
@@ -159,28 +166,44 @@ export default {
       if (!this.selectedDoctorId) return
 
       try {
-        const response = await axios.get(`http://localhost:5044/api/schedule/available-days/${this.selectedDoctorId}`)
-        this.availableDates = response.data
+        const response = await axios.get(`https://localhost:7098/api/schedule/get-doctor-slot-days`, {
+          params: { doctorId: this.selectedDoctorId },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        this.availableDates = response.data.map(date => format(new Date(date), 'yyyy-MM-dd'));
       } catch (error) {
         console.error('Ошибка получения доступных дней:', error)
       }
     },
     async selectDay(day) {
-      if (!day.active) return
+      if (!day.active) return;
 
-      this.selectedDate = day.date
-      this.selectedTime = ''
+      this.selectedDate = day.date;
+      this.selectedTime = '';
+
       try {
-        const response = await axios.get(`http://localhost:5044/api/schedule/available-times/${this.selectedDoctorId}`, {
-          params: { date: this.selectedDate }
-        })
-        this.availableTimes = response.data
+        const response = await axios.get(`https://localhost:7098/api/schedule/get-doctor-slot-times`, {
+          params: {
+            doctorId: this.selectedDoctorId,
+            date: this.selectedDate
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        this.availableTimes = response.data.map((time, index) => ({
+          slotId: time.slotId,
+          time: time
+        }));
+
       } catch (error) {
-        console.error('Ошибка получения доступного времени:', error)
+        console.error('Ошибка получения доступного времени:', error);
       }
     },
     selectTime(time) {
-      this.selectedTime = time
+      this.selectedTime = time.time;
+      this.selectedSlotId = time.slotId;
     },
     prevMonth() {
       this.currentMonth = (this.currentMonth - 1 + 12) % 12
@@ -198,20 +221,35 @@ export default {
       return this.selectedDate === date
     },
     async bookAppointment() {
-      if (!this.selectedDoctorId || !this.selectedDate || !this.selectedTime) return;
 
-      const appointmentDateTime = new Date(`${this.selectedDate}T${this.selectedTime}:00Z`);
+      console.log('Booking:', {
+        doctorId: this.selectedDoctorId,
+        date: this.selectedDate,
+        time: this.selectedTime,
+        slotId: this.selectedSlotId,
+      });
+      if (!this.selectedDoctorId || !this.selectedDate || !this.selectedSlotId) return;
+
+      const patientId = localStorage.getItem('patientId');
+      if (!patientId) {
+        alert('Пациент не синхронизирован');
+        return;
+      }
 
       const dto = {
         doctorId: this.selectedDoctorId,
-        appointmentDate: appointmentDateTime.toISOString() // важно для PostgreSQL
+        patientId: patientId,
+        slotId: this.selectedSlotId
       };
 
       try {
-        const response = await axios.post('http://localhost:5044/api/reception/createReception', dto);
+        const response = await axios.post('https://localhost:7098/api/reception/create-reception', dto, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
 
         const doctor = this.doctors.find(d => d.id === this.selectedDoctorId);
         this.successMessage = `Вы записались к врачу ${doctor.lastName} ${doctor.firstName} на ${format(parseISO(this.selectedDate), "d MMMM", { locale: ru })} в ${this.selectedTime}`;
+        await this.onDoctorChange();
       } catch (error) {
         console.error('Ошибка при создании записи:', error);
         alert('Произошла ошибка при записи. Пожалуйста, попробуйте позже.');

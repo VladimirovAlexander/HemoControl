@@ -18,7 +18,7 @@ namespace HemoCRM.Web.Controllers
             _repo = patientRepository;
             _client = httpClientFactory.CreateClient();
         }
-
+        [Authorize]
         [HttpPost("CreatePatient")]
         public async Task<IActionResult> CreatePatient([FromBody] CreatePatientDto patientDto)
         {
@@ -31,8 +31,8 @@ namespace HemoCRM.Web.Controllers
             return CreatedAtAction(nameof(GetPatientById), new { id = patien.Id }, patien);
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpPost("sync-user-with-patient")]
+        [Authorize]
+        [HttpGet("sync-user-with-patient")]
         public async Task<IActionResult> SyncUserWithPatient()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -61,14 +61,9 @@ namespace HemoCRM.Web.Controllers
             if (string.IsNullOrWhiteSpace(userInfo.PolicyNumber))
                 return BadRequest("Полис обязателен для синхронизации.");
 
-            var existingPatient = await _repo.FindPatientByPolicyAndNoUserAsync(userInfo.PolicyNumber);
+            var existingPatient = await _repo.FindPatientByPolicyAndNoUserAsync(userInfo.PolicyNumber, userId);
             if (existingPatient != null)
             {
-                await _repo.UpdatePatientDataAsync(new UpdatePatientDataDto
-                {
-                    UserId = userId
-                }, existingPatient.Id);
-
                 return Ok("Пациент успешно привязан к пользователю.");
             }
 
@@ -81,10 +76,26 @@ namespace HemoCRM.Web.Controllers
 
             var createdPatient = await _repo.CreatePatientAsync(draftPatient);
 
-            return Ok($"Создан новый пациент и привязан к пользователю: {draftPatient.Name}");
+            return Ok(new { message = "Синхронизирован", patientId = createdPatient.Id });
         }
 
-        [HttpGet("{id}")]
+
+        [Authorize]
+        [HttpGet("is-synced/{userId}")]
+        public async Task<IActionResult> IsSyncUserWithPatient(Guid userId)
+        {
+            var patientId = await _repo.GetPatientIdByUserIdAsync(userId);
+
+            if (patientId == Guid.Empty || patientId == null)
+            {
+                return NotFound("Пользователь не синхронизирован с пациентом.");
+            }
+
+            return Ok(new { patientId });
+        }
+
+        [Authorize]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetPatientById(Guid id)
         {
             var patient = await _repo.GetPatientByIdAsync(id);
@@ -96,6 +107,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(patient);
         }
 
+        [Authorize]
         [HttpGet("GetPatients")]
         public async Task<IActionResult> GetPatients()
         {
@@ -108,7 +120,8 @@ namespace HemoCRM.Web.Controllers
             return Ok(patients);
         }
 
-        [HttpPut("{id}")]
+        [Authorize]
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdatePatientData(Guid id, UpdatePatientDataDto updatePatientDataDto)
         {
             if (updatePatientDataDto == null)
@@ -136,7 +149,7 @@ namespace HemoCRM.Web.Controllers
             string policy = Request.Query["policy"];
             if (string.IsNullOrWhiteSpace(policy)) return BadRequest("Номер полиса обязательный");
 
-            var patient = await _repo.FindPatientByPolicyAndNoUserAsync(policy);
+            var patient = await _repo.FindPatientByPolicyAndNoUserAsync(policy, userId);
             if (patient != null)
             {
                 var updateDto = new UpdatePatientDataDto

@@ -7,12 +7,6 @@ const router = useRouter();
 // Пример вычисляемого свойства (можно удалить, если не нужно)
 const fullname = computed(() => "HemoControl User");
 
-// Функция для выхода из системы
-const logout = () => {
-  localStorage.removeItem('token'); // Удаляем токен
-  router.push('/login'); // Перенаправляем на страницу входа
-};
-
 // Проверка, авторизован ли пользователь
 const isAuthenticated = computed(() => !!localStorage.getItem('token'));
 </script>

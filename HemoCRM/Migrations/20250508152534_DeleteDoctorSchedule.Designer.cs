@@ -3,6 +3,7 @@ using System;
 using HemoCRM.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HemoCRM.Web.Migrations
 {
     [DbContext(typeof(HemoCrmDbContext))]
-    partial class HemoCrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250508152534_DeleteDoctorSchedule")]
+    partial class DeleteDoctorSchedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,6 +102,9 @@ namespace HemoCRM.Web.Migrations
 
                     b.Property<DateTime>("EndDateTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsBooked")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("PatientId")
                         .HasColumnType("uuid");
@@ -251,6 +257,12 @@ namespace HemoCRM.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("AppointmentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -263,9 +275,6 @@ namespace HemoCRM.Web.Migrations
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SlotId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Status")
                         .HasColumnType("text");
 
@@ -274,9 +283,6 @@ namespace HemoCRM.Web.Migrations
                     b.HasIndex("DoctorId");
 
                     b.HasIndex("PatientId");
-
-                    b.HasIndex("SlotId")
-                        .IsUnique();
 
                     b.ToTable("Receptions");
                 });
@@ -360,11 +366,13 @@ namespace HemoCRM.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HemoCRM.Web.Models.Patient", null)
+                    b.HasOne("HemoCRM.Web.Models.Patient", "Patient")
                         .WithMany("AppointmentSlots")
                         .HasForeignKey("PatientId");
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.Injection", b =>
@@ -417,17 +425,9 @@ namespace HemoCRM.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HemoCRM.Web.Models.DoctorAppointmentSlot", "Slot")
-                        .WithOne("Reception")
-                        .HasForeignKey("HemoCRM.Web.Models.Reception", "SlotId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
-
-                    b.Navigation("Slot");
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.Report", b =>
@@ -457,12 +457,6 @@ namespace HemoCRM.Web.Migrations
                     b.Navigation("AppointmentSlots");
 
                     b.Navigation("Appointments");
-                });
-
-            modelBuilder.Entity("HemoCRM.Web.Models.DoctorAppointmentSlot", b =>
-                {
-                    b.Navigation("Reception")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.Patient", b =>

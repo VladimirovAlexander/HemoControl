@@ -1,5 +1,6 @@
 ﻿using HemoCRM.Web.Dtos.TestDtos;
 using HemoCRM.Web.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HemoCRM.Web.Controllers
@@ -15,6 +16,7 @@ namespace HemoCRM.Web.Controllers
             _testRepository = testRepository;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,6 +24,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(tests);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -29,6 +32,7 @@ namespace HemoCRM.Web.Controllers
             return test == null ? NotFound() : Ok(test);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTestDto dto)
         {
@@ -36,6 +40,7 @@ namespace HemoCRM.Web.Controllers
             return CreatedAtAction(nameof(GetById), new { id = createdTest.Id }, createdTest);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTestDto dto)
         {
@@ -43,6 +48,7 @@ namespace HemoCRM.Web.Controllers
             return updatedTest == null ? NotFound() : Ok(updatedTest);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

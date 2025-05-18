@@ -25,33 +25,6 @@ namespace HemoCRM.Web.Repository
             return reception;
         }
 
-        public async Task<Reception?> CreateReceptionAsync(CreateReceptionDto dto)
-        {
-            var isTaken = await _dbContext.Receptions.AnyAsync(r =>
-                r.DoctorId == dto.DoctorId &&
-                r.AppointmentDate == dto.AppointmentDateTime);
-
-            if (isTaken)
-            {
-                return null;
-            }
-
-            var reception = new Reception
-            {
-                Id = Guid.NewGuid(),
-                PatientId = dto.PatientId,
-                DoctorId = dto.DoctorId,
-                AppointmentDate = dto.AppointmentDateTime.ToUniversalTime(),
-                Notes = dto.Notes,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _dbContext.Receptions.Add(reception);
-            await _dbContext.SaveChangesAsync();
-
-            return reception;
-        }
-
         public async Task<bool> DeleteReceptionAsync(Guid receptionId)
         {
             var reception = await _dbContext.Receptions.FindAsync(receptionId);
@@ -95,71 +68,35 @@ namespace HemoCRM.Web.Repository
             return receptions;
         }
 
-        public async Task<Reception> UpdateReceptionAsync(UpdateReceptionDto receptionDto, Guid receptionId)
+        public async Task<CreateReceptionResult> CreateReceptionAsync(CreateReceptionDto dto)
         {
-            var reception = await _dbContext.Receptions.FindAsync(receptionId);
+            var slot = await _dbContext.DoctorAppointmentSlots
+                .FirstOrDefaultAsync(s => s.Id == dto.SlotId && s.DoctorId == dto.DoctorId);
 
-            if (reception == null)
-                throw new Exception("Reception not found");
+            if (slot == null)
+                return CreateReceptionResult.Fail("Слот не найден.");
 
-            var doctor = await _dbContext.Doctors.FindAsync(receptionDto.DoctorId);
+            var existing = await _dbContext.Receptions
+                .AnyAsync(r => r.SlotId == dto.SlotId);
 
-            if (doctor == null)
-                throw new Exception("Doctor not found");
+            if (existing)
+                return CreateReceptionResult.Fail("Слот уже занят.");
 
-            reception.Doctor = doctor;
-            reception.DoctorId = receptionDto.DoctorId;
-            reception.Notes = receptionDto.Notes;
-            reception.Status = receptionDto.Status;
-            switch (receptionDto.Status)
+            var reception = new Reception
             {
-                case ReceptionsStatus.MovedBack:
-                        
-                    reception.AppointmentDate = receptionDto.AppointmentDate;
-                    break;
-                case ReceptionsStatus.Completed:
-                    reception.CompletedAt = DateTime.UtcNow;
-                    break;
-                default:
-                    break;
-            }
-            
-            _dbContext.Receptions.Update(reception);
+                Id = Guid.NewGuid(),
+                PatientId = dto.PatientId,
+                DoctorId = dto.DoctorId,
+                SlotId = dto.SlotId,
+                Notes = dto.Notes,
+                Status = "Запланировано",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _dbContext.Receptions.Add(reception);
             await _dbContext.SaveChangesAsync();
 
-            return reception;
-        }
-
-        public async Task<List<DateTime>> GetAvailableSlotsAsync(Guid doctorId, DateTime date)
-        {
-            var schedule = await _dbContext.DoctorSchedules
-                .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.DayOfWeek == date.DayOfWeek);
-            if (schedule == null) return new List<DateTime>();
-
-            var start = schedule.StartTime;
-            var end = schedule.EndTime;
-
-            var slots = new List<DateTime>();
-            var current = start;
-
-            while (current + schedule.AppointmentDuration <= end)
-            {
-                if (current >= schedule.LunchStart && current < schedule.LunchEnd)
-                {
-                    current = schedule.LunchEnd;
-                    continue;
-                }
-
-                slots.Add(date.Date + current);
-                current += schedule.AppointmentDuration + schedule.BreakBetweenAppointments;
-            }
-
-            var takenTimes = await _dbContext.Receptions
-                .Where(r => r.DoctorId == doctorId && r.AppointmentDate.Value.Date == date.Date)
-                .Select(r => r.AppointmentDate.Value)
-                .ToListAsync();
-
-            return slots.Where(s => !takenTimes.Contains(s)).ToList();
+            return CreateReceptionResult.Ok(reception.Id);
         }
     }
 }

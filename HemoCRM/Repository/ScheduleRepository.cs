@@ -14,82 +14,45 @@ namespace HemoCRM.Web.Repository
             _context = context;
         }
 
-        public async Task<List<DateTime>> GetAvailableDaysAsync(Guid doctorId)
+        public async Task<List<DoctorAppointmentSlot>> CreateDoctorSlots(List<DoctorAppointmentSlot> slots)
         {
-            var days = new List<DateTime>();
-            var today = DateTime.UtcNow.Date;
-            var schedule = await _context.DoctorSchedules.FirstOrDefaultAsync(s => s.DoctorId == doctorId);
-
-            if (schedule == null) return days;
-
-            for (int i = 0; i < 30; i++)
-            {
-                var date = today.AddDays(i);
-                var times = await GetAvailableTimesAsync(doctorId, date);
-
-                if (times.Any())
-                {
-                    days.Add(date);
-                }
-            }
-
-            return days;
-        }
-
-        public async Task<List<TimeSpan>> GetAvailableTimesAsync(Guid doctorId, DateTime date)
-        {
-            date = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
-
-            var schedule = await _context.DoctorSchedules.FirstOrDefaultAsync(s => s.DoctorId == doctorId);
-            if (schedule == null) return new List<TimeSpan>();
-
-            var allAppointments = await _context.Receptions
-                .Where(r => r.DoctorId == doctorId && r.AppointmentDate.HasValue && r.AppointmentDate.Value.Date == date.Date)
-                .ToListAsync();
-
-            List<TimeSpan> availableTimes = new();
-
-            TimeSpan time = schedule.StartTime;
-            while (time + schedule.AppointmentDuration <= schedule.EndTime)
-            {
-                bool inLunchBreak = time >= schedule.LunchStart && time < schedule.LunchEnd;
-                bool isBooked = allAppointments.Any(r =>
-                    r.AppointmentDate.Value.TimeOfDay >= time &&
-                    r.AppointmentDate.Value.TimeOfDay < time + schedule.AppointmentDuration
-                );
-
-                if (!inLunchBreak && !isBooked)
-                {
-                    availableTimes.Add(time);
-                }
-
-                time += schedule.AppointmentDuration + schedule.BreakBetweenAppointments;
-            }
-
-            return availableTimes;
-        }
-
-        public async Task AddDoctorSchedulesAsync(IEnumerable<DoctorSchedule> schedules)
-        {
-            await _context.DoctorSchedules.AddRangeAsync(schedules);
+            if (slots == null || !slots.Any())
+                throw new ArgumentException("Список слотов не может быть пустым.");
+            await _context.DoctorAppointmentSlots.AddRangeAsync(slots);
             await _context.SaveChangesAsync();
+            return slots;
         }
 
-        public async Task<IEnumerable<DoctorSchedule>> GetDoctorSchedulesAsync(Guid doctorId)
+        public Task<List<DoctorAppointmentSlot>> GetDoctorSlots(Guid doctorId)
         {
-            return await _context.DoctorSchedules
-                .Where(s => s.DoctorId == doctorId)
-                .ToListAsync();
-        }
-
-        public async Task DeleteSchedulesByDoctorAsync(Guid doctorId)
-        {
-            var existing = await _context.DoctorSchedules
+            if (doctorId == null)
+            {
+                return null;
+            }
+            var slots = _context.DoctorAppointmentSlots
                 .Where(x => x.DoctorId == doctorId)
                 .ToListAsync();
+            return slots;
+        }
+        public async Task<List<DateTime>> GetDoctorSlotDays(Guid doctorId)
+        {
+            return await _context.DoctorAppointmentSlots
+                .Where(s => s.DoctorId == doctorId)
+                .Select(s => s.StartDateTime.Date)
+                .Distinct()
+                .OrderBy(date => date)
+                .ToListAsync();
+        }
 
-            _context.DoctorSchedules.RemoveRange(existing);
-            await _context.SaveChangesAsync();
+        public async Task<List<TimeSpan>> GetDoctorSlotTimesOnDay(Guid doctorId, DateTime date)
+        {
+            date = DateTime.SpecifyKind(date, DateTimeKind.Utc);
+
+            return await _context.DoctorAppointmentSlots
+                .Where(s => s.DoctorId == doctorId && s.StartDateTime.Date == date)
+                .OrderBy(s => s.StartDateTime)
+                .Select(s => s.StartDateTime.TimeOfDay)
+                .ToListAsync();
         }
     }
 }

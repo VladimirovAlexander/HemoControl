@@ -13,11 +13,10 @@ namespace HemoCRM.Web.Data
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Diagnosis> Diagnoses { get; set; }
         public DbSet<Injection> Injections { get; set; }
-        public DbSet<DoctorSchedule> DoctorSchedules { get; set; }
+        public DbSet<DoctorAppointmentSlot> DoctorAppointmentSlots { get; set; }
 
         public HemoCrmDbContext(DbContextOptions options):base(options) 
         {
-
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +26,5 @@ namespace HemoCRM.Web.Data
                 .Property(t => t.Status)
                 .HasConversion<string>();
         }
-
     }
 }

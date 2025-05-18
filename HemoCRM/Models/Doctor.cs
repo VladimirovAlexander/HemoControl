@@ -13,7 +13,8 @@
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Reception> Appointments { get; set; } = new List<Reception>();
-        public ICollection<DoctorSchedule> Schedules { get; set; } = new List<DoctorSchedule>();
+
+        public ICollection<DoctorAppointmentSlot> AppointmentSlots { get; set; }
 
     }
 }

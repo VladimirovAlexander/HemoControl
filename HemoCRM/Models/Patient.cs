@@ -24,6 +24,7 @@
         public ICollection<Medication> Medications { get; set; } = new List<Medication>();
         public ICollection<Report> Reports { get; set; } = new List<Report>();
         public ICollection<Injection> Injections { get; set; } = new List<Injection>();
+        public ICollection<DoctorAppointmentSlot> AppointmentSlots { get; set; }
 
 
 

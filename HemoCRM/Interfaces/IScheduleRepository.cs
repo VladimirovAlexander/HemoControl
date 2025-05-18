@@ -4,15 +4,10 @@ namespace HemoCRM.Web.Interfaces
 {
     public interface IScheduleRepository
     {
-        Task<List<DateTime>> GetAvailableDaysAsync(Guid doctorId);
-
-        Task<List<TimeSpan>> GetAvailableTimesAsync(Guid doctorId, DateTime date);
-
-        Task AddDoctorSchedulesAsync(IEnumerable<DoctorSchedule> schedules);
-
-        Task<IEnumerable<DoctorSchedule>> GetDoctorSchedulesAsync(Guid doctorId);
-
-        Task DeleteSchedulesByDoctorAsync(Guid doctorId);
+        Task<List<DoctorAppointmentSlot>> CreateDoctorSlots(List<DoctorAppointmentSlot> slots);
+        Task<List<DoctorAppointmentSlot>> GetDoctorSlots(Guid doctorId);
+        Task<List<DateTime>> GetDoctorSlotDays(Guid doctorId);
+        Task<List<TimeSpan>> GetDoctorSlotTimesOnDay(Guid doctorId, DateTime date);
     }
 }
 

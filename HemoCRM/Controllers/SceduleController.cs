@@ -1,7 +1,9 @@
 ﻿using HemoCRM.Web.Dtos.ScheduleDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HemoCRM.Web.Controllers
 {
@@ -16,78 +18,72 @@ namespace HemoCRM.Web.Controllers
             _scheduleRepository = scheduleRepository;
         }
 
-        /// <summary>
-        /// Получить доступные дни для записи к врачу
-        /// </summary>
-        [HttpGet("available-days/{doctorId}")]
-        public async Task<IActionResult> GetAvailableDays(Guid doctorId)
+        [Authorize]
+        [HttpPost("create-slots")]
+        public async Task<IActionResult> CreateDoctorSlots([FromBody] CreateDoctorScheduleRequest request)
         {
-            var availableDays = await _scheduleRepository.GetAvailableDaysAsync(doctorId);
+            if (request.NumberOfAppointments < 1 || request.NumberOfAppointments > 10)
+                return BadRequest("Количество сеансов должно быть от 1 до 10.");
 
-            if (!availableDays.Any())
+            var slots = new List<DoctorAppointmentSlot>();
+            var currentStart = request.StartDateTime;
+            var appointmentDuration = TimeSpan.FromMinutes(20);
+            var breakBetween = TimeSpan.FromMinutes(10);
+
+            for (int i = 0; i < request.NumberOfAppointments; i++)
             {
-                return NotFound("Нет доступных дней для записи");
+                var startDateTime = currentStart;
+                var endDateTime = startDateTime + appointmentDuration;
+
+                slots.Add(new DoctorAppointmentSlot
+                {
+                    Id = Guid.NewGuid(),
+                    DoctorId = request.DoctorId,
+                    StartDateTime = startDateTime,
+                    EndDateTime = endDateTime,
+                });
+
+                currentStart += appointmentDuration + breakBetween;
             }
 
-            return Ok(availableDays.Select(d => d.ToString("yyyy-MM-dd")));
+            await _scheduleRepository.CreateDoctorSlots(slots);
+            return Ok(new { message = "Сеансы созданы", count = slots.Count });
         }
 
-        /// <summary>
-        /// Получить доступное время на выбранный день
-        /// </summary>
-        [HttpGet("available-times/{doctorId}")]
-        public async Task<IActionResult> GetAvailableTimes(Guid doctorId, [FromQuery] DateTime date)
+        [Authorize]
+        [HttpGet("get-doctor-slots")]
+        public async Task<IActionResult> GetDoctorSlots([FromQuery] Guid doctorId)
         {
-            date = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
-
-            var availableTimes = await _scheduleRepository.GetAvailableTimesAsync(doctorId, date);
-
-            if (!availableTimes.Any())
-            {
-                return NotFound("Нет доступного времени на выбранный день");
-            }
-
-            return Ok(availableTimes.Select(t => t.ToString(@"hh\:mm")));
+            var slots = await _scheduleRepository.GetDoctorSlots(doctorId);
+            if (slots == null || !slots.Any())
+                return NotFound("Нет доступных сеансов для данного врача.");
+            return Ok(slots);
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateDoctorSchedule([FromBody] CreateDoctorScheduleRequest request)
+        [Authorize]
+        [HttpGet("get-doctor-slot-days")]
+        public async Task<IActionResult> GetDoctorSlotsOnDay([FromQuery] Guid doctorId)
         {
-            if (request.Days == null || !request.Days.Any())
-            {
-                return BadRequest("Не указаны дни расписания.");
-            }
+            var slotDates = await _scheduleRepository.GetDoctorSlotDays(doctorId);
 
-            var schedules = request.Days.Select(day => new DoctorSchedule
-            {
-                Id = Guid.NewGuid(),
-                DoctorId = request.DoctorId,
-                DayOfWeek = day.DayOfWeek,
-                StartTime = day.StartTime,
-                EndTime = day.EndTime,
-                AppointmentDuration = day.AppointmentDuration,
-                BreakBetweenAppointments = day.BreakBetweenAppointments,
-                LunchStart = day.LunchStart,
-                LunchEnd = day.LunchEnd
-            }).ToList();
+            if (slotDates == null || !slotDates.Any())
+                return NotFound("У врача нет запланированных слотов.");
 
-            await _scheduleRepository.AddDoctorSchedulesAsync(schedules);
-
-            return Ok(new { message = "Расписание врача успешно создано.", count = schedules.Count });
+            return Ok(slotDates);
         }
 
-        [HttpGet("{doctorId}")]
-        public async Task<IActionResult> GetDoctorSchedule(Guid doctorId)
+        [Authorize]
+        [HttpGet("get-doctor-slot-times")]
+        public async Task<IActionResult> GetDoctorSlotTimesOnDay([FromQuery] Guid doctorId, [FromQuery] DateTime date)
         {
-            var schedules = await _scheduleRepository.GetDoctorSchedulesAsync(doctorId);
-            return Ok(schedules);
-        }
+            var utcDate = DateTime.SpecifyKind(date, DateTimeKind.Utc);
 
-        [HttpDelete("{doctorId}")]
-        public async Task<IActionResult> DeleteDoctorSchedule(Guid doctorId)
-        {
-            await _scheduleRepository.DeleteSchedulesByDoctorAsync(doctorId);
-            return Ok(new { message = "Расписание врача удалено." });
+            var slotTimes = await _scheduleRepository.GetDoctorSlotTimesOnDay(doctorId, date.Date);
+
+            if (slotTimes == null || !slotTimes.Any())
+                return NotFound("На выбранный день нет слотов у врача.");
+
+            return Ok(slotTimes);
         }
     }
 }

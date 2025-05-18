@@ -1,5 +1,6 @@
 ﻿using HemoCRM.Web.Dtos.DoctorDtos;
 using HemoCRM.Web.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HemoCRM.Web.Controllers
@@ -15,6 +16,7 @@ namespace HemoCRM.Web.Controllers
             _doctorRepository = doctorRepository;
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctorById(Guid id)
         {
@@ -26,6 +28,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(doctor);
         }
 
+        [Authorize]
         [HttpGet("GetDoctors")]
         public async Task<IActionResult> GetDoctors()
         {
@@ -37,6 +40,7 @@ namespace HemoCRM.Web.Controllers
             return Ok(doctorList);
         }
 
+        [Authorize]
         [HttpPost("CreateDoctor")]
         public async Task<IActionResult> CreateDoctor(CreateDoctorDto createDoctorDto)
         {
@@ -48,6 +52,7 @@ namespace HemoCRM.Web.Controllers
             return CreatedAtAction(nameof(GetDoctorById), new { id = doctor.Id}, doctor);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDoctorData(UpdateDoctorDataDto updateDoctorDataDto, Guid id)
         {
