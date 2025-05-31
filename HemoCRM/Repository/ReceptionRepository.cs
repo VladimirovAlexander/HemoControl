@@ -40,7 +40,12 @@ namespace HemoCRM.Web.Repository
 
         public async Task<List<Reception>?> GetDoctorReceptionsAsync(Guid doctorId)
         {
-            var receptions = await _dbContext.Receptions.Where(x => x.DoctorId == doctorId).ToListAsync();
+            var receptions = await _dbContext.Receptions.Where(x => x.DoctorId == doctorId)
+                .Include(r => r.Patient)
+                .Include(r => r.Slot)
+                .Include(r => r.Notes)
+                .ToListAsync(); 
+
             if (receptions.Count == 0)
             {
                 return null;
@@ -88,7 +93,20 @@ namespace HemoCRM.Web.Repository
                 PatientId = dto.PatientId,
                 DoctorId = dto.DoctorId,
                 SlotId = dto.SlotId,
-                Notes = dto.Notes,
+
+                Notes = new Notes
+                {
+                    Anamnesis = string.Empty,
+                    Complaints = string.Empty,
+                    GeneralConditions = string.Empty,
+                    Physique = string.Empty,
+                    State = string.Empty,
+                    Skin = string.Empty,
+                    Examination = string.Empty,
+                    Treatment = string.Empty,
+                    Recommendations = string.Empty,
+                    Turnout = string.Empty
+                },
                 Status = "Запланировано",
                 CreatedAt = DateTime.UtcNow
             };

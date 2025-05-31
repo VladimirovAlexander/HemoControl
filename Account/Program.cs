@@ -21,6 +21,8 @@ namespace Account
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddHttpClient();
+
             builder.Services.AddAuthorization();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

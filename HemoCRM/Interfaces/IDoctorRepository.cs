@@ -14,5 +14,7 @@ namespace HemoCRM.Web.Interfaces
         Task<Doctor> UpdateDoctorAsync(UpdateDoctorDataDto updateDoctorDataDto, Guid id);
 
         Task<List<Doctor>> GetDoctorsBySpecialtyAsync(string specialties);
+
+        Task<Doctor> GetDoctorByUserIdAsync(Guid id);
     }
 }

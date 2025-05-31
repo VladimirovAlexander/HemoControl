@@ -34,14 +34,22 @@ namespace HemoCRM.Web.Controllers
         public async Task<IActionResult> GetReceptions()
         {
             var receptions = await _receptionRepository.GetReceptionsAsync();
+            if (receptions == null)
+            {
+                return NotFound("Записи не найдены");
+            }
             return Ok(receptions);
         }
 
         [Authorize]
-        [HttpGet("user-receptions/{userId}")]
-        public async Task<IActionResult> GetUsersReceptions(Guid iduserId)
+        [HttpGet("user-receptions/{patientId}")]
+        public async Task<IActionResult> GetUsersReceptions([FromRoute] Guid patientId)
         {
-            var receptions = await _receptionRepository.GetUserReceptionsAsync(iduserId);
+            var receptions = await _receptionRepository.GetUserReceptionsAsync(patientId);
+            if (receptions == null)
+            {
+                return NotFound("Записи не найдены");
+            }
             return Ok(receptions);
         }
 
@@ -50,6 +58,10 @@ namespace HemoCRM.Web.Controllers
         public async Task<IActionResult> GetDoctorsReceptions(Guid doctorId)
         {
             var receptions = await _receptionRepository.GetDoctorReceptionsAsync(doctorId);
+            if (receptions == null)
+            {
+                return NotFound("Записи не найдены");
+            }
             return Ok(receptions);
         }
         

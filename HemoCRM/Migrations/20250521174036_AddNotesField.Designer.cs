@@ -3,6 +3,7 @@ using System;
 using HemoCRM.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HemoCRM.Web.Migrations
 {
     [DbContext(typeof(HemoCrmDbContext))]
-    partial class HemoCrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521174036_AddNotesField")]
+    partial class AddNotesField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,10 +77,6 @@ namespace HemoCRM.Web.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Specialty")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
 

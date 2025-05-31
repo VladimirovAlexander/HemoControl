@@ -21,9 +21,11 @@ namespace HemoCRM.Web.Repository
             {
                 FirstName = createDoctorDto.FirstName,
                 LastName = createDoctorDto.LastName,
+                Surname = createDoctorDto.Surname,
                 PhoneNumber = createDoctorDto.PhoneNumber,
                 Email = createDoctorDto.Email,
-                Specialty = createDoctorDto.Specialty
+                Specialty = createDoctorDto.Specialty,
+                UserId = createDoctorDto.UserId
             };
             await _context.Doctors.AddAsync(doctor);    
             await _context.SaveChangesAsync();
@@ -37,6 +39,12 @@ namespace HemoCRM.Web.Repository
             {
                 return null;
             }
+            return doctor;
+        }
+
+        public async Task<Doctor> GetDoctorByUserIdAsync(Guid id)
+        {
+            var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.UserId == id);
             return doctor;
         }
 
@@ -62,6 +70,7 @@ namespace HemoCRM.Web.Repository
             }
             doctor.FirstName = updateDoctorDataDto.FirstName;
             doctor.LastName = updateDoctorDataDto.LastName;
+            doctor.Surname = updateDoctorDataDto.Surname;
             doctor.PhoneNumber = updateDoctorDataDto.PhoneNumber;
             doctor.Email = updateDoctorDataDto.Email;
             doctor.Specialty = updateDoctorDataDto.Specialty;

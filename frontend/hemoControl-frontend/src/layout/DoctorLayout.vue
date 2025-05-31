@@ -74,14 +74,9 @@
         isSidebarCollapsed: false,
         isLoggedIn: false,
         menuItems: [
-          { title: 'Главная', icon: 'home', href: '/hemocontrol' },
-          { title: 'Запись к врачу', icon: 'calendar', href: '/appointments/book' },
-          { title: 'Мои приёмы', icon: 'clock', href: '/hemocontrol/appointments' },
-          { title: 'Результаты анализов', icon: 'file-text', href: '/lab-results' },
-          { title: 'История болезни', icon: 'clipboard', href: '/history' },
-          { title: 'Медицинская карта', icon: 'book-open', href: '/card' },
-          { title: 'Документы', icon: 'folder', href: '/documents' },
-          { title: 'Уведомления', icon: 'bell', href: '/notifications' },
+          { title: 'Главная', icon: 'home', href: '/doctor/home' },
+          { title: 'Записи на сегодня', icon: 'calendar', href: '/doctor/today-notes' },
+          { title: 'Все записи', icon: 'clock', href: '/doctor/notes' }
         ]
       };
     },
@@ -91,16 +86,16 @@
         nextTick(() => feather.replace());
       },
       goToLogin() {
-        this.$router.push('/login');
+        this.$router.push('/personal-login');
       },
       goToProfile() {
-        this.$router.push('/hemocontrol/profile');
+        this.$router.push('/doctor/profile');
       },
       logout() {
         localStorage.removeItem('token');
         localStorage.clear();
         this.isLoggedIn = false;
-        this.$router.push('/login');
+        this.$router.push('/personal-login');
       },
       checkAuth() {
         const token = localStorage.getItem('token');
@@ -119,21 +114,5 @@
     transform: rotate(180deg);
     transition: transform 0.3s ease;
   }
-  .modal-content {
-  max-width: 32rem; /* max-w-2xl = 768px */
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-.modal-content > .scrollable {
-  flex-grow: 1;
-  overflow-y: auto;
-  min-height: 0; /* важно для flex */
-}
   </style>
   

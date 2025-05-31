@@ -19,6 +19,16 @@ namespace HemoCRM.Web.Controllers
         }
 
         [Authorize]
+        [HttpGet("get-slot/{slotId}")]
+        public async Task<IActionResult> GetSlotById(Guid slotId)
+        {
+            var slots = await _scheduleRepository.GetSlotById(slotId);
+            if (slots == null)
+                return NotFound("Слот не найден.");
+            return Ok(slots);
+        }
+
+        [Authorize]
         [HttpPost("create-slots")]
         public async Task<IActionResult> CreateDoctorSlots([FromBody] CreateDoctorScheduleRequest request)
         {
@@ -82,6 +92,8 @@ namespace HemoCRM.Web.Controllers
 
             if (slotTimes == null || !slotTimes.Any())
                 return NotFound("На выбранный день нет слотов у врача.");
+
+
 
             return Ok(slotTimes);
         }

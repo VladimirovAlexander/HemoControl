@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http;
 using System.Security.Claims;
 
 namespace Account.Controllers
@@ -15,12 +16,14 @@ namespace Account.Controllers
     public class AccountController:Controller
     {
         private readonly UserManager<User> _userManager;
-        private readonly  ITokenService _tokenService; 
+        private readonly  ITokenService _tokenService;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public AccountController(UserManager<User> userManager, ITokenService tokenService)
+        public AccountController(UserManager<User> userManager, ITokenService tokenService, IHttpClientFactory httpClientFactory)
         {
             _userManager = userManager;
-            _tokenService = tokenService;           
+            _tokenService = tokenService;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpPost("register")]
@@ -61,46 +64,62 @@ namespace Account.Controllers
             }
         }
 
-        [Authorize(Roles = UserRole.Administrator)]
         [HttpPost("register-staff")]
         public async Task<IActionResult> RegisterStaff([FromBody] RegisterStaffDto registerModel)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest("Invalid input data");
-            }
 
             try
             {
                 var validRoles = new List<string> { UserRole.Doctor, UserRole.Assistant, UserRole.Administrator };
                 if (!validRoles.Contains(registerModel.Role))
-                {
                     return BadRequest("Неверная роль");
-                }
 
                 var user = new User
                 {
-                    UserName = registerModel.UserName,
+                    UserName = registerModel.Login,
                     Email = registerModel.Email
                 };
 
-                var createdUser = await _userManager.CreateAsync(user, registerModel.Password);
+                var createUserResult = await _userManager.CreateAsync(user, registerModel.Password);
+                if (!createUserResult.Succeeded)
+                    return BadRequest(string.Join("; ", createUserResult.Errors.Select(e => e.Description)));
 
-                if (createdUser.Succeeded)
+                await _userManager.AddToRoleAsync(user, registerModel.Role);
+
+                if (registerModel.Role == UserRole.Doctor)
                 {
-                    await _userManager.AddToRoleAsync(user, registerModel.Role);
-                    return StatusCode(201, $"{registerModel.Role} успешно зарегистрирован");
+                    var httpClient = _httpClientFactory.CreateClient();
+
+                    var createDoctorDto = new
+                    {
+                        FirstName = registerModel.FirstName,
+                        LastName = registerModel.LastName,
+                        Surname = registerModel.Surname,
+                        Specialty = registerModel.Specialty,
+                        Email = registerModel.Email,
+                        PhoneNumber = registerModel.PhoneNumber,
+                        UserId = user.Id
+                    };
+
+                    var response = await httpClient.PostAsJsonAsync("https://localhost:7098/api/doctor/CreateDoctor", createDoctorDto);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        await _userManager.DeleteAsync(user);
+                        return StatusCode(500, "Не удалось создать профиль доктора");
+                    }
                 }
-                else
-                {
-                    return BadRequest(string.Join("; ", createdUser.Errors.Select(e => e.Description)));
-                }
+
+                return StatusCode(201, $"{registerModel.Role} успешно зарегистрирован");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Server error: {ex.Message}");
             }
         }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginModel)

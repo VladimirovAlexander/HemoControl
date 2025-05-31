@@ -14,6 +14,7 @@ namespace HemoCRM.Web.Data
         public DbSet<Diagnosis> Diagnoses { get; set; }
         public DbSet<Injection> Injections { get; set; }
         public DbSet<DoctorAppointmentSlot> DoctorAppointmentSlots { get; set; }
+        public DbSet<Notes> Notes { get; set; }
 
         public HemoCrmDbContext(DbContextOptions options):base(options) 
         {
@@ -25,6 +26,10 @@ namespace HemoCRM.Web.Data
             modelBuilder.Entity<Test>()
                 .Property(t => t.Status)
                 .HasConversion<string>();
+            modelBuilder.Entity<Reception>()
+                .HasOne(r => r.Notes)
+                .WithOne(n => n.Reception)
+                .HasForeignKey<Notes>(n => n.ReceptionId);
         }
     }
 }

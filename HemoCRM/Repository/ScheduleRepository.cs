@@ -1,4 +1,5 @@
 ﻿using HemoCRM.Web.Data;
+using HemoCRM.Web.Dtos.ScheduleDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
 using Microsoft.EntityFrameworkCore;
@@ -44,15 +45,26 @@ namespace HemoCRM.Web.Repository
                 .ToListAsync();
         }
 
-        public async Task<List<TimeSpan>> GetDoctorSlotTimesOnDay(Guid doctorId, DateTime date)
+        public async Task<List<SlotDto>> GetDoctorSlotTimesOnDay(Guid doctorId, DateTime date)
         {
             date = DateTime.SpecifyKind(date, DateTimeKind.Utc);
 
             return await _context.DoctorAppointmentSlots
                 .Where(s => s.DoctorId == doctorId && s.StartDateTime.Date == date)
                 .OrderBy(s => s.StartDateTime)
-                .Select(s => s.StartDateTime.TimeOfDay)
+                .Select(s => new SlotDto
+                {
+                    SlotId = s.Id,
+                    Time = s.StartDateTime.TimeOfDay
+                })
                 .ToListAsync();
+        }
+
+        public async Task<DoctorAppointmentSlot> GetSlotById(Guid slotId)
+        {
+            return await _context.DoctorAppointmentSlots
+               .FirstOrDefaultAsync(x => x.Id == slotId)
+               ?? throw new InvalidOperationException("Слот с указанным идентификатором не найден.");
         }
     }
 }

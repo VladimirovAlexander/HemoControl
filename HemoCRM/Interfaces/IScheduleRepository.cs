@@ -1,4 +1,5 @@
-﻿using HemoCRM.Web.Models;
+﻿using HemoCRM.Web.Dtos.ScheduleDtos;
+using HemoCRM.Web.Models;
 
 namespace HemoCRM.Web.Interfaces
 {
@@ -7,7 +8,8 @@ namespace HemoCRM.Web.Interfaces
         Task<List<DoctorAppointmentSlot>> CreateDoctorSlots(List<DoctorAppointmentSlot> slots);
         Task<List<DoctorAppointmentSlot>> GetDoctorSlots(Guid doctorId);
         Task<List<DateTime>> GetDoctorSlotDays(Guid doctorId);
-        Task<List<TimeSpan>> GetDoctorSlotTimesOnDay(Guid doctorId, DateTime date);
+        Task<List<SlotDto>> GetDoctorSlotTimesOnDay(Guid doctorId, DateTime date);
+        Task<DoctorAppointmentSlot>  GetSlotById(Guid slotId);
     }
 }
 

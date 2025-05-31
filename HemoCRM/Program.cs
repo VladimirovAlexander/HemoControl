@@ -27,6 +27,7 @@ namespace HemoCRM.Web
             builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
             builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
             builder.Services.AddScoped<ITestRepository, TestRepository>();
+            builder.Services.AddScoped<INotesRepository, NotesRepository>();
 
             builder.Services.AddSwaggerGen(option =>
             {
@@ -55,7 +56,11 @@ namespace HemoCRM.Web
                     }
                 });
             });
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                            .AddJsonOptions(options =>
+                            {
+                                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+                            });
 
             builder.Services.AddHttpClient();
 

@@ -4,6 +4,6 @@ namespace Account.Model
 {
     public class User : IdentityUser
     {
-        public string PolicyNumber { get; set; }
+        public string? PolicyNumber { get; set; }
     }
 }

@@ -110,7 +110,7 @@ export default {
       selectedDate: '',
       availableTimes: [],
       selectedTime: '',
-      successMessage: '',
+      successMessage: null,
       currentMonth: new Date().getMonth(),
       currentYear: new Date().getFullYear(),
       weekDays: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
@@ -192,10 +192,12 @@ export default {
           }
         });
 
-        this.availableTimes = response.data.map((time, index) => ({
-          slotId: time.slotId,
-          time: time
+        this.availableTimes = response.data.map(slot => ({
+          slotId: slot.slotId,
+          time: slot.time
         }));
+
+        this.selectedSlotId = this.availableTimes.length ? this.availableTimes[0].slotId : '';
 
       } catch (error) {
         console.error('Ошибка получения доступного времени:', error);
@@ -231,6 +233,7 @@ export default {
       if (!this.selectedDoctorId || !this.selectedDate || !this.selectedSlotId) return;
 
       const patientId = localStorage.getItem('patientId');
+      
       if (!patientId) {
         alert('Пациент не синхронизирован');
         return;
@@ -248,21 +251,23 @@ export default {
         });
 
         const doctor = this.doctors.find(d => d.id === this.selectedDoctorId);
-        this.successMessage = `Вы записались к врачу ${doctor.lastName} ${doctor.firstName} на ${format(parseISO(this.selectedDate), "d MMMM", { locale: ru })} в ${this.selectedTime}`;
-        await this.onDoctorChange();
+
+        const formattedTime = this.selectedTime.slice(0, 5);
+        this.successMessage = `Вы записались к врачу ${doctor.lastName} ${doctor.firstName} на ${format(parseISO(this.selectedDate), "d MMMM", { locale: ru })} в ${formattedTime}`;
+  
       } catch (error) {
         console.error('Ошибка при создании записи:', error);
         alert('Произошла ошибка при записи. Пожалуйста, попробуйте позже.');
       }
     },
     closeModal() {
-      this.successMessage = ''
-      this.selectedDoctorId = ''
-      this.selectedDate = ''
-      this.selectedTime = ''
-      this.availableTimes = []
-      this.availableDates = []
-      this.$router.push('/appointments')
+      this.selectedDoctorId = '';
+      this.selectedDate = '';
+      this.selectedTime = '';
+      this.availableTimes = [];
+      this.availableDates = [];
+      this.successMessage = null;
+      this.$router.push('/hemocontrol/appointments')
     }
   }
 }
