@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace HemoCRM.Web
 {
@@ -59,7 +60,8 @@ namespace HemoCRM.Web
             builder.Services.AddControllers()
                             .AddJsonOptions(options =>
                             {
-                                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+                                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                                options.JsonSerializerOptions.WriteIndented = true;
                             });
 
             builder.Services.AddHttpClient();

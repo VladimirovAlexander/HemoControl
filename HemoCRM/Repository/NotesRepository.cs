@@ -57,5 +57,34 @@ namespace HemoCRM.Web.Repository
             var notesList = await _dbContext.Notes.ToListAsync();
             return notesList;
         }
+
+        public async Task<Notes> UpdateNotesAsync(Guid id, UpdateNotesDto dto)
+        {
+            var existingNote = await _dbContext.Notes.FindAsync(id);
+            if (existingNote == null)
+            {
+                return null;
+            }
+
+            // Обновляем поля
+            existingNote.Anamnesis = dto.Anamnesis;
+            existingNote.Complaints = dto.Complaints;
+            existingNote.GeneralConditions = dto.GeneralConditions;
+            existingNote.Physique = dto.Physique;
+            existingNote.Weight = dto.Weight;
+            existingNote.Height = dto.Height;
+            existingNote.BloodPressureSystolic = dto.BloodPressureSystolic;
+            existingNote.BloodPressureDiastolic = dto.BloodPressureDiastolic;
+            existingNote.Temperature = dto.Temperature;
+            existingNote.State = dto.State;
+            existingNote.Skin = dto.Skin;
+            existingNote.Examination = dto.Examination;
+            existingNote.Treatment = dto.Treatment;
+            existingNote.Recommendations = dto.Recommendations;
+            existingNote.Turnout = dto.Turnout;
+
+            await _dbContext.SaveChangesAsync();
+            return existingNote;
+        }
     }
 }

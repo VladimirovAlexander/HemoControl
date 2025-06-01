@@ -8,6 +8,7 @@ namespace HemoCRM.Web.Interfaces
         Task CreateNotesAsync(CreateNotesDto createNotesDto);
         Task<List<Notes>> GetNotesListAsync();
         Task<Notes> GetNotesByIdAsync(Guid id);
+        Task<Notes> UpdateNotesAsync(Guid id, UpdateNotesDto dto);
 
     }
 }

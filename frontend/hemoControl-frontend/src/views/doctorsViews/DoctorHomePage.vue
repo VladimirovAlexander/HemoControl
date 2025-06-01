@@ -62,10 +62,10 @@
     <!-- Модальное окно с исправленной прокруткой -->
     <div
       v-if="showModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4"
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 overflow-auto"
       @click.self="closeModal"
     >
-      <div class="bg-white rounded-lg w-full max-w-4xl max-h-[95vh] flex flex-col shadow-xl overflow-hidden">
+      <div class="bg-white rounded-lg w-full max-w-4xl max-h-screen flex flex-col shadow-xl overflow-auto">
         <!-- Шапка модального окна -->
         <div class="flex justify-between items-center border-b p-4 bg-white">
           <h2 class="text-2xl font-semibold text-blue-900">Карточка приёма</h2>
@@ -128,23 +128,40 @@
               <h3 class="text-lg font-semibold mb-2 text-blue-800">Заметки</h3>
               
               <div class="space-y-4">
+                
+                <!-- Анамнез -->
+                <div>
+                  <h4 class="font-semibold mb-1 text-blue-700">Анамнез</h4>
+                  <textarea
+                    v-model="notes.anamnesis"
+                    class="w-full border rounded p-2 min-h-[100px] resize-none overflow-hidden"
+                    placeholder=""
+                    ref="anamnesisTextarea"
+                    @input="autoResize($refs.anamnesisTextarea)"
+                  ></textarea>
+                </div>
+
                 <!-- Жалобы -->
                 <div>
                   <h4 class="font-semibold mb-1 text-blue-700">Жалобы</h4>
                   <textarea
                     v-model="notes.complaints"
-                    class="w-full border rounded p-2 min-h-[100px]"
+                    class="w-full border rounded p-2 min-h-[100px] resize-none overflow-hidden"
                     placeholder="Опишите жалобы пациента"
+                    ref="complaintsTextarea"
+                    @input="autoResize($refs.complaintsTextarea)"
                   ></textarea>
                 </div>
 
-                <!-- Общее состояние -->
+                <!-- Объективный статус -->
                 <div>
-                  <h4 class="font-semibold mb-1 text-blue-700">Общее состояние</h4>
+                  <h4 class="font-semibold mb-1 text-blue-700">Объективный статус</h4>
                   <textarea
                     v-model="notes.generalConditions"
-                    class="w-full border rounded p-2 min-h-[100px]"
-                    placeholder="Опишите общее состояние пациента"
+                    class="w-full border rounded p-2 min-h-[100px] resize-none overflow-hidden"
+                    placeholder="Опишите состояние пациента"
+                    ref="generalConditionsTextarea"
+                    @input="autoResize($refs.generalConditionsTextarea)"
                   ></textarea>
                 </div>
 
@@ -152,6 +169,14 @@
                 <div>
                   <h4 class="font-semibold mb-2 text-blue-700">Физика</h4>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium mb-1">Телосложение</label>
+                      <input
+                        type="text"
+                        v-model.number="notes.phisique"
+                        class="w-full border rounded p-2"
+                      />
+                    </div>
                     <div>
                       <label class="block text-sm font-medium mb-1">Вес (кг)</label>
                       <input
@@ -208,35 +233,46 @@
                   <h4 class="font-semibold mb-1 text-blue-700">Кожа</h4>
                   <textarea
                     v-model="notes.skin"
-                    class="w-full border rounded p-2 min-h-[60px]"
+                    class="w-full border rounded p-2 min-h-[60px] resize-none overflow-hidden"
                     placeholder="Опишите состояние кожи"
+                    ref="skinTextarea"
+                    @input="autoResize($refs.skinTextarea)"
                   ></textarea>
                 </div>
 
+                <!-- Осмотр -->
                 <div>
                   <h4 class="font-semibold mb-1 text-blue-700">Осмотр</h4>
                   <textarea
                     v-model="notes.examination"
-                    class="w-full border rounded p-2 min-h-[100px]"
+                    class="w-full border rounded p-2 min-h-[100px] resize-none overflow-hidden"
                     placeholder="Результаты осмотра"
+                    ref="examinationTextarea"
+                    @input="autoResize($refs.examinationTextarea)"
                   ></textarea>
                 </div>
 
+                <!-- Лечение -->
                 <div>
                   <h4 class="font-semibold mb-1 text-blue-700">Лечение</h4>
                   <textarea
                     v-model="notes.treatment"
-                    class="w-full border rounded p-2 min-h-[100px]"
+                    class="w-full border rounded p-2 min-h-[100px] resize-none overflow-hidden"
                     placeholder="Назначенное лечение"
+                    ref="treatmentTextarea"
+                    @input="autoResize($refs.treatmentTextarea)"
                   ></textarea>
                 </div>
 
+                <!-- Рекомендации -->
                 <div>
                   <h4 class="font-semibold mb-1 text-blue-700">Рекомендации</h4>
                   <textarea
                     v-model="notes.recommendations"
-                    class="w-full border rounded p-2 min-h-[100px]"
+                    class="w-full border rounded p-2 min-h-[100px] resize-none overflow-hidden"
                     placeholder="Рекомендации пациенту"
+                    ref="recommendationsTextarea"
+                    @input="autoResize($refs.recommendationsTextarea)"
                   ></textarea>
                 </div>
               </div>
@@ -318,7 +354,7 @@ export default {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
-        const data = response.data.$values || [];
+        const data = response.data || [];
         this.upcomingAppointments = data;
         const today = new Date().toISOString().split('T')[0];
         this.stats.todaysAppointments = data.filter(appt =>
@@ -329,9 +365,29 @@ export default {
       }
     },
     async saveNotes() {
-      if (!this.selectedAppointment) return;
+      if (!this.selectedAppointment || !this.notes?.id) return;
+
+      // Сформировать DTO, исключая id
+      const updateNotesDto = {
+        anamnesis: this.notes.anamnesis,
+        complaints: this.notes.complaints,
+        generalConditions: this.notes.generalConditions,
+        physique: this.notes.physique,
+        weight: this.notes.weight,
+        height: this.notes.height,
+        bloodPressureSystolic: this.notes.bloodPressureSystolic,
+        bloodPressureDiastolic: this.notes.bloodPressureDiastolic,
+        temperature: this.notes.temperature,
+        state: this.notes.state,
+        skin: this.notes.skin,
+        examination: this.notes.examination,
+        treatment: this.notes.treatment,
+        recommendations: this.notes.recommendations,
+        turnout: this.notes.turnout
+      };
+
       try {
-        await axios.put(`https://localhost:7098/api/notes/${this.notes.id}`, this.notes, {
+        await axios.put(`https://localhost:7098/api/notes/updateNote/${this.notes.id}`, updateNotesDto, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }

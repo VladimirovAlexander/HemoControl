@@ -1,5 +1,6 @@
 ﻿using HemoCRM.Web.Dtos.NotesDtos;
 using HemoCRM.Web.Interfaces;
+using HemoCRM.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +43,24 @@ namespace HemoCRM.Web.Controllers
         {
             var notesList = await _notesRepository.GetNotesListAsync();
             return Ok(notesList);
+        }
+        
+        [HttpPut("updateNote/{id}")]
+        public async Task<IActionResult> UpdateNote(Guid id, [FromBody] UpdateNotesDto updatedNote)
+        {
+            if (updatedNote == null)
+            {
+                return BadRequest("Неверные данные для обновления.");
+            }
+
+            var result = await _notesRepository.UpdateNotesAsync(id, updatedNote);
+
+            if (result == null)
+            {
+                return NotFound($"Заметка с ID {id} не найдена.");
+            }
+
+            return Ok(result);
         }
     }
 }
