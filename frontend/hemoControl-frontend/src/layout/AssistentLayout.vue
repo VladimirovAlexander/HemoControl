@@ -74,7 +74,7 @@
         isSidebarCollapsed: false,
         isLoggedIn: false,
         menuItems: [
-          { title: 'Главная', icon: 'home', href: '/doctor/home' },
+          { title: 'Главная', icon: 'home', href: '/assitent/home' },
         ]
       };
     },
@@ -87,7 +87,7 @@
         this.$router.push('/personal-login');
       },
       goToProfile() {
-        this.$router.push('/doctor/profile');
+        this.$router.push('/assistent/profile');
       },
       logout() {
         localStorage.removeItem('token');

@@ -8,8 +8,10 @@ namespace HemoCRM.Web.Data
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Reception> Receptions { get; set; }
         public DbSet<Test> Tests { get; set; }
+        public DbSet<CompleteBloodCountTest> CompleteBloodCountTests { get; set; }
+        public DbSet<CoagulogramTest> CoagulogramTests { get; set; }
+        public DbSet<FactorAndVWFTest> FactorAndVWFTests { get; set; }
         public DbSet<Medication> Medications { get; set; }
-        public DbSet<Report> Reports { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Diagnosis> Diagnoses { get; set; }
         public DbSet<Injection> Injections { get; set; }
@@ -30,6 +32,21 @@ namespace HemoCRM.Web.Data
                 .HasOne(r => r.Notes)
                 .WithOne(n => n.Reception)
                 .HasForeignKey<Notes>(n => n.ReceptionId);
+
+            modelBuilder.Entity<Test>()
+                .HasOne(t => t.CbcDetails)
+                .WithOne(d => d.Test)
+                .HasForeignKey<CompleteBloodCountTest>(d => d.TestId);
+
+            modelBuilder.Entity<Test>()
+                .HasOne(t => t.CoagulogramDetails)
+                .WithOne(d => d.Test)
+                .HasForeignKey<CoagulogramTest>(d => d.TestId);
+
+            modelBuilder.Entity<Test>()
+                .HasOne(t => t.FactorAndVwfDetails)
+                .WithOne(d => d.Test)
+                .HasForeignKey<FactorAndVWFTest>(d => d.TestId);
         }
     }
 }

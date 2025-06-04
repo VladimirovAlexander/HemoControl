@@ -11,8 +11,10 @@ namespace HemoCRM.Web.Interfaces
 
         Task<Test> CreateTestAsync(CreateTestDto testDto);
 
-        Task<Test?> UpdateTestAsync(Guid id, UpdateTestDto updateDto);
+        Task UpdateTestAsync(Test test);
 
         Task<bool> DeleteTestAsync(Guid id);
+        Task<Test?> GetTestByReceptionIdAndTypeAsync(Guid receptionId, string testType);
+        Task DeleteAsync(Test test);
     }
 }

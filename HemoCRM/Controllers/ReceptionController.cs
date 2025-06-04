@@ -1,4 +1,5 @@
 ﻿using HemoCRM.Web.Dtos.ReceptionDtos;
+using HemoCRM.Web.Dtos.TestDtos;
 using HemoCRM.Web.Interfaces;
 using HemoCRM.Web.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -90,6 +91,14 @@ namespace HemoCRM.Web.Controllers
                 return BadRequest(result.Message);
 
             return Ok(new { message = "Запись успешно создана", receptionId = result.ReceptionId });
+        }
+
+        [Authorize]
+        [HttpPut("assign-tests/{receptionId}")]
+        public async Task<IActionResult> AssignTestsToReception(Guid receptionId, [FromBody] AssignTestsDto dto)
+        {
+            var success = await _receptionRepository.AssignTestsToReceptionAsync(receptionId, dto);
+            return success ? Ok("Анализы назначены") : BadRequest("Ошибка назначения анализов");
         }
     }
 }

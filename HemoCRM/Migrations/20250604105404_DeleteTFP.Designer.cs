@@ -3,6 +3,7 @@ using System;
 using HemoCRM.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HemoCRM.Web.Migrations
 {
     [DbContext(typeof(HemoCrmDbContext))]
-    partial class HemoCrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250604105404_DeleteTFP")]
+    partial class DeleteTFP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,6 +279,7 @@ namespace HemoCRM.Web.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Anamnesis")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<byte>("BloodPressureDiastolic")
@@ -285,39 +289,48 @@ namespace HemoCRM.Web.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Complaints")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Examination")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("GeneralConditions")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("Height")
                         .HasColumnType("double precision");
 
                     b.Property<string>("Physique")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("ReceptionId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Recommendations")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Skin")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("State")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("Temperature")
                         .HasColumnType("double precision");
 
                     b.Property<string>("Treatment")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Turnout")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("Weight")

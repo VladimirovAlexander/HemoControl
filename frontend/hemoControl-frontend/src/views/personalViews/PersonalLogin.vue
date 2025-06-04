@@ -54,6 +54,7 @@ export default {
     const isLoading = ref(false);
     const route = useRoute();
     const router = useRouter();
+    const role = ref('');
 
     onMounted(() => {
       if (route.query.message) {
@@ -74,9 +75,19 @@ export default {
         localStorage.setItem('token', token);
 
         await getInfo();
-
-        router.push('/doctor/home');
-
+        switch (role.value) {
+          case 'Doctor':
+            router.push('/doctor/home');
+            break;
+          case 'Assistant':
+            router.push('/assistent/home');
+            break;
+          default:
+            alert('Неизвестная роль, доступ запрещён');
+            break;
+        }
+        infoMessage.value = 'Успешный вход!';
+        error.value = '';
       } catch (err) {
         if (err.response) {
           error.value = err.response.data || 'Ошибка входа. Проверьте данные.';
@@ -93,9 +104,8 @@ export default {
         const res = await axios.get('https://localhost:7000/api/account/info', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-
+        role.value = res.data.role;
         localStorage.setItem('userId', res.data.userId);
-
       } catch (err) {
         console.error('Ошибка при получении аккаунта:', err);
       }

@@ -1,4 +1,5 @@
 ﻿using HemoCRM.Web.Dtos.ReceptionDtos;
+using HemoCRM.Web.Dtos.TestDtos;
 using HemoCRM.Web.Models;
 
 namespace HemoCRM.Web.Interfaces
@@ -11,10 +12,12 @@ namespace HemoCRM.Web.Interfaces
 
         Task<List<Reception>?> GetUserReceptionsAsync(Guid userId);
 
-        Task<List<Reception>?> GetDoctorReceptionsAsync(Guid doctorId);
+        Task<List<Reception>> GetDoctorReceptionsAsync(Guid doctorId);
 
         Task<bool> DeleteReceptionAsync(Guid receptionId);
 
         Task<CreateReceptionResult> CreateReceptionAsync(CreateReceptionDto dto);
+
+        Task<bool> AssignTestsToReceptionAsync(Guid receptionId, AssignTestsDto dto);
     }
 }

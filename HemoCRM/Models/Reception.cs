@@ -14,5 +14,6 @@ namespace HemoCRM.Web.Models
         public Doctor Doctor { get; set; }
         public DoctorAppointmentSlot Slot { get; set; }
         public Notes Notes { get; set; }
+        public ICollection<Test> Tests { get; set; } = new List<Test>();
     }
 }

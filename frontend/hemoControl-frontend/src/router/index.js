@@ -6,13 +6,14 @@ import BookAppoinment from '../views/patientViews/BookAppoinment.vue';
 import AppLayot from '../layout/AppLayot.vue';
 import Profile from '../views/patientViews/Profile.vue';
 import Appointments from '../views/patientViews/Appointments.vue';
-import DoctorNotesPage from '../views/doctorsViews/DoctorNotesPage.vue';
 import DoctorLayout from '../layout/DoctorLayout.vue';
 import DoctorHomePage from '../views/doctorsViews/DoctorHomePage.vue';
 import DoctorProfilePage from '../views/doctorsViews/DoctorProfilePage.vue';
-import DoctorNotesTodayPage from '../views/doctorsViews/DoctorTodayNotesPage.vue';
 import PersonalRegister from '../views/personalViews/PersonalRegister.vue';
 import PersonalLogin from '../views/personalViews/PersonalLogin.vue';
+import AssistentLayout from '../layout/AssistentLayout.vue';
+import AssistentHomePage from '../views/assistentViews/AssistentHomePage.vue';
+import AssistentProfilePage from '../views/assistentViews/AssistentProfilePage.vue';
 
 const routes = [
     { 
@@ -30,9 +31,15 @@ const routes = [
       component: DoctorLayout,
       children: [
        { path: '/doctor/home', name: 'DoctorHomePage', component: DoctorHomePage, name: 'DoctorHomePage', meta: { requiresAuth: true } },
-       { path: '/doctor/notes', name: 'DoctorNotesPage', component: DoctorNotesPage, name: 'DoctorNotesPage', meta: { requiresAuth: true } },
        { path: '/doctor/profile', name: 'DoctorProfilePage', component: DoctorProfilePage, name: 'DoctorProfilePage', meta: { requiresAuth: true } },
-       { path: '/doctor/today-notes', name: 'DoctorNotesTodayPage', component: DoctorNotesTodayPage, name: 'DoctorNotesTodayPage', meta: { requiresAuth: true } },
+      ]
+    },
+    {
+      path: '/assistent',
+      component: AssistentLayout,
+      children: [
+       { path: '/assistent/home', name: 'AssistentHomePage', component: AssistentHomePage, name: 'AssistentHomePage', meta: { requiresAuth: true } },
+       { path: '/assistent/profile', name: 'AssistentProfilePage', component: AssistentProfilePage, name: 'AssistentProfilePage', meta: { requiresAuth: true } },
       ]
     },
     { path: '/register', component: Register, name: 'Register' },

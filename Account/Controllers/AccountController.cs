@@ -157,13 +157,17 @@ namespace Account.Controllers
             if (user == null)
                 return NotFound("Пользователь не найден");
 
+            var roles = await _userManager.GetRolesAsync(user);
+
             var dto = new UserInfoDto
             {
                 UserId = Guid.Parse(user.Id),
                 PolicyNumber = user.PolicyNumber,
                 Name = user.UserName,
                 PhoneNumber = user.PhoneNumber,
-                Email = user.Email
+                Email = user.Email,
+                Role = roles.FirstOrDefault(),
+
             };
             return Ok(dto);
         }

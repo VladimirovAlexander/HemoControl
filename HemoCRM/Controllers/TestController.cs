@@ -1,9 +1,11 @@
 ﻿using HemoCRM.Web.Dtos.TestDtos;
 using HemoCRM.Web.Interfaces;
+using HemoCRM.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace HemoCRM.Web.Controllers
+namespace HemoCRM.Web.Controllers6
 {
     [ApiController]
     [Route("api/tests")]
@@ -36,16 +38,79 @@ namespace HemoCRM.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTestDto dto)
         {
-            var createdTest = await _testRepository.CreateTestAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = createdTest.Id }, createdTest);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var createdTest = await _testRepository.CreateTestAsync(dto);
+                return CreatedAtAction(nameof(GetById), new { id = createdTest.Id }, createdTest);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTestDto dto)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateTestResults([FromBody] UpdateTestRequest dto) // Измените параметр
         {
-            var updatedTest = await _testRepository.UpdateTestAsync(id, dto);
-            return updatedTest == null ? NotFound() : Ok(updatedTest);
+            if (dto == null) // Проверяем наличие DTO
+            {
+                return BadRequest("DTO is required");
+            }
+
+            var test = await _testRepository.GetTestByIdAsync(dto.Dto.TestId);
+            if (test == null)
+                return NotFound("Анализ не найден");
+
+            test.Status = dto.Dto.Status switch
+            {
+                "Completed" => TestStatus.Completed,
+                "Pending" => TestStatus.Pending,
+                "InProgress" => TestStatus.InProgress,
+                _ => test.Status 
+            };
+
+            test.Result = dto.Dto.Result;
+            test.CompletedAt = dto.Dto.Status == "Completed" ? DateTime.UtcNow : null;
+
+            // Обновляем детали в зависимости от типа теста
+            switch (dto.Dto.TestType)
+            {
+                case "CBC":
+                    test.CbcDetails ??= new CompleteBloodCountTest { TestId = test.Id };
+                    test.CbcDetails.Hemoglobin = dto.Dto.Results.Hemoglobin;
+                    test.CbcDetails.Hematocrit = dto.Dto.Results.Hematocrit;
+                    test.CbcDetails.WhiteBloodCells = dto.Dto.Results.WhiteBloodCells;
+                    test.CbcDetails.RedBloodCells = dto.Dto.Results.RedBloodCells;
+                    test.CbcDetails.Platelets = dto.Dto.Results.Platelets;
+                    test.CbcDetails.MCH = dto.Dto.Results.MCH;
+                    test.CbcDetails.MCV = dto.Dto.Results.MCV;
+                    break;
+
+                case "Coagulogram":
+                    test.CoagulogramDetails ??= new CoagulogramTest { TestId = test.Id };
+                    test.CoagulogramDetails.PT = dto.Dto.Results.PT;
+                    test.CoagulogramDetails.INR = dto.Dto.Results.INR;
+                    test.CoagulogramDetails.APTT = dto.Dto.Results.APTT;
+                    test.CoagulogramDetails.Fibrinogen = dto.Dto.Results.Fibrinogen;
+                    break;
+
+                case "FactorAndVWF":
+                    test.FactorAndVwfDetails ??= new FactorAndVWFTest { TestId = test.Id };
+                    test.FactorAndVwfDetails.FactorVIII = dto.Dto.Results.FactorVIII;
+                    test.FactorAndVwfDetails.FactorIX = dto.Dto.Results.FactorIX;
+                    test.FactorAndVwfDetails.VWFActivity = dto.Dto.Results.VWFActivity;
+                    break;
+
+                default:
+                    return BadRequest("Неизвестный тип анализа");
+            }
+
+            await _testRepository.UpdateTestAsync(test);
+            return Ok(test);
         }
 
         [Authorize]
@@ -54,6 +119,18 @@ namespace HemoCRM.Web.Controllers
         {
             var deleted = await _testRepository.DeleteTestAsync(id);
             return deleted ? Ok() : NotFound();
+        }
+
+        [HttpDelete("remove-test/{receptionId}/{testType}")]
+        public async Task<IActionResult> RemoveTest(Guid receptionId, string testType)
+        {
+            var test = await _testRepository.GetTestByReceptionIdAndTypeAsync(receptionId, testType);
+            if (test == null)
+                return NotFound("Анализ не найден");
+
+            await _testRepository.DeleteAsync(test);
+
+            return Ok("Анализ успешно удалён");
         }
     }
 }

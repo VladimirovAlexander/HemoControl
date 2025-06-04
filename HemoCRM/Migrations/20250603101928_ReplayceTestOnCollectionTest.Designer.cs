@@ -3,6 +3,7 @@ using System;
 using HemoCRM.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HemoCRM.Web.Migrations
 {
     [DbContext(typeof(HemoCrmDbContext))]
-    partial class HemoCrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250603101928_ReplayceTestOnCollectionTest")]
+    partial class ReplayceTestOnCollectionTest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,59 +24,6 @@ namespace HemoCRM.Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("HemoCRM.Web.Models.CoagulogramTest", b =>
-                {
-                    b.Property<Guid>("TestId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("APTT")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Fibrinogen")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("INR")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("PT")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("TestId");
-
-                    b.ToTable("CoagulogramTests");
-                });
-
-            modelBuilder.Entity("HemoCRM.Web.Models.CompleteBloodCountTest", b =>
-                {
-                    b.Property<Guid>("TestId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Hematocrit")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Hemoglobin")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("MCH")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("MCV")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Platelets")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("RedBloodCells")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("WhiteBloodCells")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("TestId");
-
-                    b.ToTable("CompleteBloodCountTests");
-                });
 
             modelBuilder.Entity("HemoCRM.Web.Models.Diagnosis", b =>
                 {
@@ -172,25 +122,6 @@ namespace HemoCRM.Web.Migrations
                     b.ToTable("DoctorAppointmentSlots");
                 });
 
-            modelBuilder.Entity("HemoCRM.Web.Models.FactorAndVWFTest", b =>
-                {
-                    b.Property<Guid>("TestId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("FactorIX")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("FactorVIII")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("VWFActivity")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("TestId");
-
-                    b.ToTable("FactorAndVWFTests");
-                });
-
             modelBuilder.Entity("HemoCRM.Web.Models.Injection", b =>
                 {
                     b.Property<Guid>("Id")
@@ -276,6 +207,7 @@ namespace HemoCRM.Web.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Anamnesis")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<byte>("BloodPressureDiastolic")
@@ -285,39 +217,48 @@ namespace HemoCRM.Web.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Complaints")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Examination")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("GeneralConditions")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("Height")
                         .HasColumnType("double precision");
 
                     b.Property<string>("Physique")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("ReceptionId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Recommendations")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Skin")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("State")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("Temperature")
                         .HasColumnType("double precision");
 
                     b.Property<string>("Treatment")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Turnout")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("Weight")
@@ -447,7 +388,8 @@ namespace HemoCRM.Web.Migrations
 
                     b.Property<string>("TestType")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
 
                     b.HasKey("Id");
 
@@ -456,28 +398,73 @@ namespace HemoCRM.Web.Migrations
                     b.HasIndex("ReceptionId");
 
                     b.ToTable("Tests");
+
+                    b.HasDiscriminator<string>("TestType").HasValue("Test");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.CoagulogramTest", b =>
                 {
-                    b.HasOne("HemoCRM.Web.Models.Test", "Test")
-                        .WithOne("CoagulogramDetails")
-                        .HasForeignKey("HemoCRM.Web.Models.CoagulogramTest", "TestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasBaseType("HemoCRM.Web.Models.Test");
 
-                    b.Navigation("Test");
+                    b.Property<double>("APTT")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Fibrinogen")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("INR")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("PT")
+                        .HasColumnType("double precision");
+
+                    b.HasDiscriminator().HasValue("Coagulogram");
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.CompleteBloodCountTest", b =>
                 {
-                    b.HasOne("HemoCRM.Web.Models.Test", "Test")
-                        .WithOne("CbcDetails")
-                        .HasForeignKey("HemoCRM.Web.Models.CompleteBloodCountTest", "TestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasBaseType("HemoCRM.Web.Models.Test");
 
-                    b.Navigation("Test");
+                    b.Property<double>("Hematocrit")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Hemoglobin")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("MCH")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("MCV")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Platelets")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("RedBloodCells")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("WhiteBloodCells")
+                        .HasColumnType("double precision");
+
+                    b.HasDiscriminator().HasValue("CBC");
+                });
+
+            modelBuilder.Entity("HemoCRM.Web.Models.FactorAndVWFTest", b =>
+                {
+                    b.HasBaseType("HemoCRM.Web.Models.Test");
+
+                    b.Property<double>("FactorIX")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("FactorVIII")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("VWFActivity")
+                        .HasColumnType("double precision");
+
+                    b.HasDiscriminator().HasValue("FactorAndVWF");
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.Diagnosis", b =>
@@ -504,17 +491,6 @@ namespace HemoCRM.Web.Migrations
                         .HasForeignKey("PatientId");
 
                     b.Navigation("Doctor");
-                });
-
-            modelBuilder.Entity("HemoCRM.Web.Models.FactorAndVWFTest", b =>
-                {
-                    b.HasOne("HemoCRM.Web.Models.Test", "Test")
-                        .WithOne("FactorAndVwfDetails")
-                        .HasForeignKey("HemoCRM.Web.Models.FactorAndVWFTest", "TestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("HemoCRM.Web.Models.Injection", b =>
@@ -644,15 +620,6 @@ namespace HemoCRM.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Tests");
-                });
-
-            modelBuilder.Entity("HemoCRM.Web.Models.Test", b =>
-                {
-                    b.Navigation("CbcDetails");
-
-                    b.Navigation("CoagulogramDetails");
-
-                    b.Navigation("FactorAndVwfDetails");
                 });
 #pragma warning restore 612, 618
         }
