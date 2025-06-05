@@ -33,7 +33,15 @@
         >
           {{ isLoading ? 'Вход...' : 'Войти' }}
         </button>
-
+        <div class="text-center pt-4 border-t border-gray-200">
+          <p class="text-gray-600">Ещё нет аккаунта?</p>
+          <router-link 
+            to="/personal-register" 
+            class="text-blue-600 font-medium hover:text-blue-800 transition"
+          >
+            Зарегистрироваться
+          </router-link>
+        </div>
         <p v-if="error" class="text-red-500 text-center mt-4">{{ error }}</p>
       </form>
     </div>
@@ -73,8 +81,8 @@ export default {
 
         const token = response.data.token;
         localStorage.setItem('token', token);
-
         await getInfo();
+        console.log(role.value);
         switch (role.value) {
           case 'Doctor':
             router.push('/doctor/home');
@@ -83,7 +91,7 @@ export default {
             router.push('/assistent/home');
             break;
           default:
-            alert('Неизвестная роль, доступ запрещён');
+            router.push('/admin/home');
             break;
         }
         infoMessage.value = 'Успешный вход!';

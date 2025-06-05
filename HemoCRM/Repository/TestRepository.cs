@@ -178,5 +178,67 @@ namespace HemoCRM.Web.Repository
             _dbContext.Tests.Remove(test);
             await _dbContext.SaveChangesAsync();
         }
+        public async Task<List<Test>> EnrichTestResults(List<Test> tests)
+        {
+            foreach (var test in tests)
+            {
+                switch (test.TestType.ToLower())
+                {
+                    case "cbc":
+                        var cbc = await _dbContext.CompleteBloodCountTests
+                            .FirstOrDefaultAsync(d => d.TestId == test.Id);
+                        test.Parameters = new Dictionary<string, double>
+                        {
+                            ["Hemoglobin"] = cbc?.Hemoglobin ?? 0,
+                            ["Hematocrit"] = cbc?.Hematocrit ?? 0,
+                            ["WBC"] = cbc?.WhiteBloodCells ?? 0,
+                            ["RBC"] = cbc?.RedBloodCells ?? 0,
+                            ["Platelets"] = cbc?.Platelets ?? 0,
+                            ["MCH"] = cbc?.MCH ?? 0,
+                            ["MCV"] = cbc?.MCV ?? 0
+                        };
+                        break;
+
+                    case "coagulogram":
+                        var coag = await _dbContext.CoagulogramTests
+                            .FirstOrDefaultAsync(d => d.TestId == test.Id);
+                        test.Parameters = new Dictionary<string, double>
+                        {
+                            ["PT"] = coag?.PT ?? 0,
+                            ["INR"] = coag?.INR ?? 0,
+                            ["APTT"] = coag?.APTT ?? 0,
+                            ["Fibrinogen"] = coag?.Fibrinogen ?? 0
+                        };
+                        break;
+
+                    case "factorandvwf":
+                        var factor = await _dbContext.FactorAndVWFTests
+                            .FirstOrDefaultAsync(d => d.TestId == test.Id);
+                        test.Parameters = new Dictionary<string, double>
+                        {
+                            ["FactorVIII"] = factor?.FactorVIII ?? 0,
+                            ["FactorIX"] = factor?.FactorIX ?? 0,
+                            ["VWFActivity"] = factor?.VWFActivity ?? 0
+                        };
+                        break;
+                }
+            }
+
+            return tests;
+        }
+        public async Task<List<Test>?> GetTestsByReceptionIdAsync(Guid receptionId)
+        {
+            return await _dbContext.Tests
+                .Where(t => t.ReceptionId == receptionId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Reception>> GetReceptionsByPatientIdAsync(Guid patientId)
+        {
+            return await _dbContext.Receptions
+                .Where(r => r.PatientId == patientId)
+                .Include(r => r.Slot)
+                .ToListAsync();
+        }
     }
 }

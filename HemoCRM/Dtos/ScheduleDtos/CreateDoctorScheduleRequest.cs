@@ -6,7 +6,6 @@ namespace HemoCRM.Web.Dtos.ScheduleDtos
     {
         public Guid DoctorId { get; set; }
         public DateTime StartDateTime { get; set; }
-        public DateTime? EndDateTime { get; set; }
         public int NumberOfAppointments {  get; set; }
     }
 }

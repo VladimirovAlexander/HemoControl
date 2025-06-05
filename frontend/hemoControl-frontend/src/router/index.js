@@ -14,17 +14,21 @@ import PersonalLogin from '../views/personalViews/PersonalLogin.vue';
 import AssistentLayout from '../layout/AssistentLayout.vue';
 import AssistentHomePage from '../views/assistentViews/AssistentHomePage.vue';
 import AssistentProfilePage from '../views/assistentViews/AssistentProfilePage.vue';
-
+import LabResults from '../views/patientViews/LabResults.vue';
+import AdminLayout from '../layout/AdminLayout.vue';
+import AdminHomePage from '../views/adminViews/AdminHomePage.vue';
+import AdminProfilePage from '../views/adminViews/AdminProfilePage.vue';
 const routes = [
     { 
         path: '/hemocontrol', 
         component: AppLayot, 
         name: 'AppLayot', children: [
             { path: '/hemocontrol', component: HemoControl, name: 'HemoControl', meta: { requiresAuth: true } },
-            { path: '/appointments/book', component: BookAppoinment, name: 'BookAppoinment', meta: { requiresAuth: true } },
+            { path: '/hemocontrol/appointments/book', component: BookAppoinment, name: 'BookAppoinment', meta: { requiresAuth: true } },
             { path: '/hemocontrol/profile', component: Profile, name: 'Profile', meta: { requiresAuth: true } },
             { path: '/hemocontrol/appointments', component: Appointments, name: 'Appointments', meta: { requiresAuth: true } },
-        ]
+            { path: '/hemocontrol/lab-results', component: LabResults, name: 'LabResults', meta: { requiresAuth: true } },
+          ]
     },
     {
       path: '/doctor',
@@ -40,6 +44,14 @@ const routes = [
       children: [
        { path: '/assistent/home', name: 'AssistentHomePage', component: AssistentHomePage, name: 'AssistentHomePage', meta: { requiresAuth: true } },
        { path: '/assistent/profile', name: 'AssistentProfilePage', component: AssistentProfilePage, name: 'AssistentProfilePage', meta: { requiresAuth: true } },
+      ]
+    },
+    {
+      path: '/admin',
+      component: AdminLayout,
+      children: [
+       { path: '/admin/home', name: 'AdminHomePage', component: AdminHomePage, name: 'AdminHomePage', meta: { requiresAuth: true } },
+       { path: '/admin/profile', name: 'AdminProfilePage', component: AdminProfilePage, name: 'AdminProfilePage', meta: { requiresAuth: true } },
       ]
     },
     { path: '/register', component: Register, name: 'Register' },

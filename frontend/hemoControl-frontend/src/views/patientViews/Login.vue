@@ -34,6 +34,16 @@
           {{ isLoading ? 'Вход...' : 'Войти' }}
         </button>
 
+        <div class="text-center pt-4 border-t border-gray-200">
+          <p class="text-gray-600">Ещё нет аккаунта?</p>
+          <router-link 
+            to="/register" 
+            class="text-blue-600 font-medium hover:text-blue-800 transition"
+          >
+            Зарегистрироваться
+          </router-link>
+        </div>
+
         <p v-if="error" class="text-red-500 text-center mt-4">{{ error }}</p>
       </form>
     </div>
@@ -72,7 +82,7 @@ export default {
 
         const token = response.data.token;
         localStorage.setItem('token', token);
-
+        localStorage.setItem('userId', response.data.userId);
         router.push('/hemocontrol');
 
         await getInfo();

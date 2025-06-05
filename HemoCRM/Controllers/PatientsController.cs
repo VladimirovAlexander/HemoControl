@@ -95,7 +95,7 @@ namespace HemoCRM.Web.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetPatientById(Guid id)
         {
             var patient = await _repo.GetPatientByIdAsync(id);

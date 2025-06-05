@@ -113,13 +113,66 @@ namespace HemoCRM.Web.Repository
             return receptions;
         }
 
-        public async Task<List<Reception>?> GetUserReceptionsAsync(Guid userId)
+        public async Task<List<Reception>?> GetUserReceptionsAsync(Guid patientId)
         {
-            var receptions = await _dbContext.Receptions.Where(x => x.PatientId == userId).ToListAsync();
-            if (receptions.Count == 0)
+            var receptions = await _dbContext.Receptions
+                .Where(x => x.PatientId == patientId)
+                .Include(r => r.Doctor)
+                .Include(r => r.Slot)
+                .Include(r => r.Notes)
+                .Include(r => r.Tests)
+                .AsSplitQuery()
+                .ToListAsync();
+
+            if (!receptions.Any()) return null;
+
+            foreach (var reception in receptions)
             {
-                return null;
+                foreach (var test in reception.Tests)
+                {
+                    switch (test.TestType.ToLower())
+                    {
+                        case "cbc":
+                            var cbc = await _dbContext.CompleteBloodCountTests
+                                .FirstOrDefaultAsync(d => d.TestId == test.Id);
+                            test.Parameters = new Dictionary<string, double>
+                            {
+                                ["Hemoglobin"] = cbc?.Hemoglobin ?? 0,
+                                ["Hematocrit"] = cbc?.Hematocrit ?? 0,
+                                ["WBC"] = cbc?.WhiteBloodCells ?? 0,
+                                ["RBC"] = cbc?.RedBloodCells ?? 0,
+                                ["Platelets"] = cbc?.Platelets ?? 0,
+                                ["MCH"] = cbc?.MCH ?? 0,
+                                ["MCV"] = cbc?.MCV ?? 0
+                            };
+                            break;
+
+                        case "coagulogram":
+                            var coag = await _dbContext.CoagulogramTests
+                                .FirstOrDefaultAsync(d => d.TestId == test.Id);
+                            test.Parameters = new Dictionary<string, double>
+                            {
+                                ["PT"] = coag?.PT ?? 0,
+                                ["INR"] = coag?.INR ?? 0,
+                                ["APTT"] = coag?.APTT ?? 0,
+                                ["Fibrinogen"] = coag?.Fibrinogen ?? 0
+                            };
+                            break;
+
+                        case "factorandvwf":
+                            var factor = await _dbContext.FactorAndVWFTests
+                                .FirstOrDefaultAsync(d => d.TestId == test.Id);
+                            test.Parameters = new Dictionary<string, double>
+                            {
+                                ["FactorVIII"] = factor?.FactorVIII ?? 0,
+                                ["FactorIX"] = factor?.FactorIX ?? 0,
+                                ["VWFActivity"] = factor?.VWFActivity ?? 0
+                            };
+                            break;
+                    }
+                }
             }
+
             return receptions;
         }
 

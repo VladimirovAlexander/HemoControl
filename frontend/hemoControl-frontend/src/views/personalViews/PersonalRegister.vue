@@ -84,6 +84,16 @@
           {{ isLoading ? 'Регистрация...' : 'Зарегистрироваться' }}
         </button>
 
+        <div class="text-center pt-4 border-t border-gray-200">
+          <p class="text-gray-600">Уже есть аккаунт?</p>
+          <router-link 
+            to="/personal-login" 
+            class="text-blue-600 font-medium hover:text-blue-800 transition"
+          >
+            Войти
+          </router-link>
+        </div>
+
         <p v-if="error" class="text-red-500 text-center mt-4">{{ error }}</p>
       </form>
     </div>

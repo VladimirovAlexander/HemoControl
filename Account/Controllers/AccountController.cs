@@ -72,7 +72,7 @@ namespace Account.Controllers
 
             try
             {
-                var validRoles = new List<string> { UserRole.Doctor, UserRole.Assistant, UserRole.Administrator };
+                var validRoles = new List<string> { UserRole.Doctor, UserRole.Assistant, UserRole.Administrator, UserRole.Administrator };
                 if (!validRoles.Contains(registerModel.Role))
                     return BadRequest("Неверная роль");
 

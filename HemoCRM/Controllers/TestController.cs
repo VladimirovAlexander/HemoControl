@@ -4,6 +4,7 @@ using HemoCRM.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HemoCRM.Web.Controllers6
 {
@@ -132,5 +133,62 @@ namespace HemoCRM.Web.Controllers6
 
             return Ok("Анализ успешно удалён");
         }
+
+        [Authorize]
+        [HttpGet("reception/{receptionId}")]
+        public async Task<IActionResult> GetTestsByReceptionId(Guid receptionId)
+        {
+            var tests = await _testRepository.GetTestsByReceptionIdAsync(receptionId);
+            if (tests == null || !tests.Any())
+            {
+                return NotFound("Тесты для данного приема не найдены");
+            }
+
+            var enrichedTests = await _testRepository.EnrichTestResults(tests);
+
+            return Ok(enrichedTests);
+        }
+
+        [Authorize]
+        [HttpGet("patient/{patientId}")]
+        public async Task<IActionResult> GetPatientTests(Guid patientId)
+        {
+            try
+            {
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                var receptions = await _testRepository.GetReceptionsByPatientIdAsync(patientId);
+
+                var tests = new List<Test>();
+                foreach (var reception in receptions)
+                {
+                    var receptionTests = await _testRepository.GetTestsByReceptionIdAsync(reception.Id);
+                    if (receptionTests != null)
+                    {
+                        tests.AddRange(receptionTests);
+                    }
+                }
+
+                if (!tests.Any())
+                {
+                    return NotFound("Анализы для данного пациента не найдены");
+                }
+
+                var enrichedTests = await _testRepository.EnrichTestResults(tests);
+
+                var sortedTests = enrichedTests
+                    .OrderByDescending(t => t.CreatedAt)
+                    .ToList();
+
+                return Ok(sortedTests);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Произошла ошибка при получении анализов пациента");
+            }
+        }
+
+
     }
 }
